@@ -18,11 +18,13 @@ private const val TAG_MYPAGE = "mypage_fragment"
 
 private const val KEY_TITLE="title"
 private const val KEY_SINGER="singer"
+private const val KEY_PLAY="play"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private var songTitle: String = "제목"
     private var songSinger: String = "가수"
+    private var isPlaying: Boolean = false
 
     // ActivityResultLauncher 선언
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -53,11 +55,23 @@ class MainActivity : AppCompatActivity() {
                 val data = result.data
                 songTitle = data?.getStringExtra(KEY_TITLE)?: songTitle
                 songSinger = data?.getStringExtra(KEY_SINGER)?: songSinger
+                isPlaying = data?.getBooleanExtra(KEY_PLAY, isPlaying)?: isPlaying
 
                 // 받아온 데이터 처리
                 binding.miniPlayer.findViewById<TextView>(R.id.titleText).text = songTitle
                 binding.miniPlayer.findViewById<TextView>(R.id.singerText).text = songSinger
+
+                checkPlayingState()
             }
+        }
+
+        var playStop=binding.playStop
+        playStop.setOnClickListener {
+            if(isPlaying)
+                playStop.setImageResource(R.drawable.ic_play)
+            else
+                playStop.setImageResource(R.drawable.ic_stop)
+            isPlaying=!isPlaying
         }
 
         // miniPlayer 클릭 시 SongActivity 호출
@@ -65,6 +79,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, SongActivity::class.java)
             intent.putExtra(KEY_TITLE, songTitle)
             intent.putExtra(KEY_SINGER, songSinger)
+            intent.putExtra(KEY_PLAY, !isPlaying)
             resultLauncher.launch(intent) // SongActivity 시작
         }
     }/*
@@ -75,12 +90,16 @@ class MainActivity : AppCompatActivity() {
         handleIntentData() // 새로운 데이터를 처리하는 함수 호출
     }*/
 
-    private fun handleIntentData() {
-        songTitle = intent.getStringExtra(KEY_TITLE) ?:"제목"
-        songSinger = intent.getStringExtra(KEY_SINGER) ?: "가수"
-
-        binding.miniPlayer.findViewById<TextView>(R.id.titleText).text = songTitle
-        binding.miniPlayer.findViewById<TextView>(R.id.singerText).text = songSinger
+    private fun checkPlayingState(){
+        if(isPlaying)
+        {
+            binding.playStop.setImageResource(R.drawable.ic_play)
+            isPlaying=false
+        }
+        else{
+            binding.playStop.setImageResource(R.drawable.ic_stop)
+            isPlaying=true
+        }
     }
 
     private fun setFragment(tag: String, fragment: Fragment) {

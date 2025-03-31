@@ -8,6 +8,7 @@
     tools:context=".HomeFragment">
 
     <ScrollView
+        android:id="@+id/scrollV"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -17,6 +18,7 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/allLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -25,37 +27,174 @@
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
                 android:background="@color/gray"
-                app:layout_constraintBottom_toTopOf="@+id/recommandPager"
+                app:layout_constraintBottom_toTopOf="@+id/albumScroll"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
             </androidx.viewpager2.widget.ViewPager2>
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/recommandPager"
+            <HorizontalScrollView
+                android:id="@+id/albumScroll"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                app:layout_constraintBottom_toTopOf="@+id/albumPager"
+                android:contentDescription="album_list"
+                android:overScrollMode="never"
+                app:layout_constraintBottom_toTopOf="@+id/recommendScroll"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bannerPager" />
+                app:layout_constraintTop_toBottomOf="@+id/bannerPager">
 
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/albumPager"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/albumsLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    tools:layout_editor_absoluteY="500dp">
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:padding="5dp"
+                        android:paddingStart="10dp"
+                        android:text="오늘 발매 음악"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/album1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginBottom="19dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <ImageView
+                            android:id="@+id/imageView2"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:src="@drawable/album1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="성민"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="성민"
+                            android:textColor="@color/gray"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/album2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginBottom="19dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/album1">
+
+                        <ImageView
+                            android:id="@+id/imageView20"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:src="@drawable/album2"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView10"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="유성민"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView20" />
+
+                        <TextView
+                            android:id="@+id/textView20"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="유성민"
+                            android:textColor="@color/gray"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/album3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginBottom="19dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/album2">
+
+                        <ImageView
+                            android:id="@+id/imageView200"
+                            android:layout_width="150dp"
+                            android:layout_height="150dp"
+                            android:src="@drawable/album3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/textView200"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="성민민"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/imageView200" />
+
+                        <TextView
+                            android:id="@+id/textView400"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="성민민"
+                            android:textColor="@color/gray"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/textView200" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </HorizontalScrollView>
+
+            <HorizontalScrollView
+                android:id="@+id/recommendScroll"
                 android:layout_width="0dp"
                 android:layout_height="250dp"
 
                 android:background="@color/white"
+                android:contentDescription="recommend_list"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/recommandPager"
-                tools:layout_conversion_absoluteHeight="200dp"
-                tools:layout_conversion_absoluteWidth="0dp">
-
-            </androidx.viewpager2.widget.ViewPager2>
+                app:layout_constraintTop_toBottomOf="@id/albumScroll" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
