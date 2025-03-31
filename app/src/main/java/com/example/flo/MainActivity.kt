@@ -1,7 +1,11 @@
 package com.example.flo
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -12,14 +16,24 @@ private const val TAG_AROUND = "around_fragment"
 private const val TAG_SEARCH = "search_fragment"
 private const val TAG_MYPAGE = "mypage_fragment"
 
+private const val KEY_TITLE="title"
+private const val KEY_SINGER="singer"
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private var songTitle: String = "제목"
+    private var songSinger: String = "가수"
+
+    // ActivityResultLauncher 선언
+    private lateinit var resultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //handleIntentData()
 
         setFragment(TAG_HOME, HomeFragment())
 
@@ -32,6 +46,41 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+
+        // ActivityResultLauncher 초기화
+        resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data = result.data
+                songTitle = data?.getStringExtra(KEY_TITLE)?: songTitle
+                songSinger = data?.getStringExtra(KEY_SINGER)?: songSinger
+
+                // 받아온 데이터 처리
+                binding.miniPlayer.findViewById<TextView>(R.id.titleText).text = songTitle
+                binding.miniPlayer.findViewById<TextView>(R.id.singerText).text = songSinger
+            }
+        }
+
+        // miniPlayer 클릭 시 SongActivity 호출
+        binding.miniPlayer.setOnClickListener {
+            val intent = Intent(this, SongActivity::class.java)
+            intent.putExtra(KEY_TITLE, songTitle)
+            intent.putExtra(KEY_SINGER, songSinger)
+            resultLauncher.launch(intent) // SongActivity 시작
+        }
+    }/*
+    // onNewIntent에서 intent 데이터 갱신
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        this.intent = intent // 새 Intent로 갱신
+        handleIntentData() // 새로운 데이터를 처리하는 함수 호출
+    }*/
+
+    private fun handleIntentData() {
+        songTitle = intent.getStringExtra(KEY_TITLE) ?:"제목"
+        songSinger = intent.getStringExtra(KEY_SINGER) ?: "가수"
+
+        binding.miniPlayer.findViewById<TextView>(R.id.titleText).text = songTitle
+        binding.miniPlayer.findViewById<TextView>(R.id.singerText).text = songSinger
     }
 
     private fun setFragment(tag: String, fragment: Fragment) {
