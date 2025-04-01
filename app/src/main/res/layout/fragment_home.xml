@@ -30,7 +30,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/albumScroll"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/recommendScroll">
 
 
             </androidx.viewpager2.widget.ViewPager2>
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="album_list"
                 android:overScrollMode="never"
-                app:layout_constraintBottom_toTopOf="@+id/recommendScroll"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/indicator">
@@ -71,6 +71,7 @@
                         android:paddingStart="10dp"
                         android:text="오늘 발매 음악"
                         android:textColor="#000000"
+                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -197,18 +198,18 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </HorizontalScrollView>
 
-            <HorizontalScrollView
+            <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/recommendScroll"
                 android:layout_width="0dp"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
 
                 android:background="@color/white"
                 android:contentDescription="recommend_list"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/bannerPager"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/albumScroll" />
+                app:layout_constraintTop_toTopOf="parent" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

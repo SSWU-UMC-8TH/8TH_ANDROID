@@ -99,6 +99,14 @@ class HomeFragment : Fragment() {
         val indicator : CircleIndicator3 = binding.indicator
         indicator.setViewPager(bannerPager)
 
+        val recommendAdapter = RecommendVPAdapter(this)
+        recommendAdapter.addFragment(RecommendFragment(RecommendPanel.list[0]!!))
+        recommendAdapter.addFragment(RecommendFragment(RecommendPanel.list[1]!!))
+
+        val recommendPager : ViewPager2 = binding.recommendScroll
+        recommendPager.adapter = recommendAdapter
+        recommendPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+
         return binding.root
     }
 

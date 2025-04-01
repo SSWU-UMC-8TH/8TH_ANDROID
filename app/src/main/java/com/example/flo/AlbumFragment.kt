@@ -20,9 +20,9 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class AlbumFragment : Fragment() {
-    private var imageResId: Int? = null
-    private var title: String? = null
-    private var singer: String? = null
+    var imageResId: Int? = null
+    var title: String? = null
+    var singer: String? = null
 
     private lateinit var binding: FragmentAlbumBinding
     private val information = arrayListOf("수록곡", "상세정보", "영상")
