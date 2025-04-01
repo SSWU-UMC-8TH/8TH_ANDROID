@@ -14,13 +14,15 @@ private const val KEY_PLAY="play"
 
 class SongActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySongBinding
-    private var isPlaying=true
-    private var songNext=true
+    private var isPlaying = true
+    private var isShuffle = true
+    private var isRepeat = true
+    private var songNext = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding= ActivitySongBinding.inflate(layoutInflater)
+        binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // MainActivity에서 전달된 데이터를 직접 가져오기
@@ -34,15 +36,17 @@ class SongActivity : AppCompatActivity() {
         binding.singerText.text = intentSinger
         checkPlayingState()
 
-        var playStop=binding.playStop
+        // 플레이 버튼 클릭 이벤트 처리
+        var playStop = binding.playStop
         playStop.setOnClickListener {
-            if(isPlaying)
+            if (isPlaying)
                 playStop.setImageResource(R.drawable.ic_play)
             else
                 playStop.setImageResource(R.drawable.ic_stop)
-            isPlaying=!isPlaying
+            isPlaying = !isPlaying
         }
 
+        // 뒤로가기 버튼 클릭 이벤트 처리
         binding.backIcon.setOnClickListener {
             val resultIntent = Intent().apply {
                 putExtra(KEY_TITLE, binding.titleText.text.toString())
@@ -53,30 +57,59 @@ class SongActivity : AppCompatActivity() {
             finish() // SongActivity 종료
         }
 
+        // 셔플 버튼 클릭 이벤트 처리
+        binding.icShuffle.setOnClickListener {
+            if (isShuffle) {
+                binding.icShuffle.setColorFilter(R.color.gray)
+            } else {
+                binding.icShuffle.setColorFilter(R.color.black)
+            }
+            isShuffle = !isShuffle
+        }
+
+        // 반복 버튼 클릭 이벤트 처리
+        binding.icRepeat.setOnClickListener {
+            if (isRepeat) {
+                binding.icRepeat.setColorFilter(R.color.gray)
+            } else {
+                binding.icRepeat.setColorFilter(R.color.black)
+            }
+            isRepeat = !isRepeat
+        }
+
+        // 다음 노래 버튼 클릭 이벤트 처리
         binding.nextSong.setOnClickListener {
-            if(songNext)
-            {
-                binding.titleText.text="지민"
-                binding.singerText.text ="지민"
-                songNext=false
+            if (songNext) {
+                binding.titleText.text = "지민"
+                binding.singerText.text = "지민"
+                songNext = false
+            } else {
+                binding.titleText.text = "성민"
+                binding.singerText.text = "성민"
+                songNext = true
             }
-            else{
-                binding.titleText.text="성민"
-                binding.singerText.text ="성민"
-                songNext=true
+        }
+
+        // 이전 노래 버튼 클릭 이벤트 처리
+        binding.preSong.setOnClickListener {
+            if (songNext) {
+                binding.titleText.text = "지민"
+                binding.singerText.text = "지민"
+            } else {
+                binding.titleText.text = "성민"
+                binding.singerText.text = "성민"
             }
+            songNext = !songNext
         }
     }
 
-    private fun checkPlayingState(){
-        if(isPlaying)
-        {
+    // 노래 재생 상태 변경
+    private fun checkPlayingState() {
+        if (isPlaying) {
             binding.playStop.setImageResource(R.drawable.ic_play)
-            isPlaying=false
-        }
-        else{
+        } else {
             binding.playStop.setImageResource(R.drawable.ic_stop)
-            isPlaying=true
         }
+        isPlaying = !isPlaying
     }
 }

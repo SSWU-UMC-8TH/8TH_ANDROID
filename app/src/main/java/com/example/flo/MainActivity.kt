@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.flo.databinding.ActivityMainBinding
+import android.widget.Toast
 
 private const val TAG_HOME = "home_fragment"
 private const val TAG_AROUND = "around_fragment"
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity() {
                 binding.miniPlayer.findViewById<TextView>(R.id.singerText).text = songSinger
 
                 checkPlayingState()
+                Toast.makeText(this, "SongActivity에서 받은 제목: $songTitle, 가수: $songSinger ", Toast.LENGTH_SHORT).show()
             }
         }
 

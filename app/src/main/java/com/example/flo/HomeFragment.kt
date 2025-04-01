@@ -1,11 +1,17 @@
 package com.example.flo
 
 import android.os.Bundle
+import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.databinding.FragmentHomeBinding
+import me.relex.circleindicator.CircleIndicator3
+import android.os.Handler
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +30,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -40,9 +48,57 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
-        binding.album1.setOnClickListener {
-            (context as MainActivity).supportFragmentManager.beginTransaction().replace(R.id.mainFrame, AlbumFragment()).commitAllowingStateLoss()
+        var currentPage = 0
+        //페이지 변경하기
+        fun setPage(){
+            if(currentPage == 2)
+                currentPage = 0
+            binding.bannerPager.setCurrentItem(currentPage, true)
+            currentPage+=1
         }
+
+        val handler=Handler(Looper.getMainLooper()){
+            setPage()
+            true
+        }
+        class PagerRunnable:Runnable{
+            override fun run() {
+                while(true){
+                    try {
+                        Thread.sleep(1000)
+                        handler.sendEmptyMessage(0)
+                    } catch (e : InterruptedException){
+                        Log.d("interupt", "interupt발생")
+                    }
+                }
+            }
+        }
+
+        Thread(PagerRunnable()).start()
+
+        binding.album1.setOnClickListener {
+            sendToAlbumFragment(R.drawable.album1, "성민", "성민")
+        }
+        binding.album2.setOnClickListener {
+            sendToAlbumFragment(R.drawable.album2, "유성민", "유성민")
+        }
+        binding.album3.setOnClickListener {
+            sendToAlbumFragment(R.drawable.album3, "성민민", "성민민")
+        }
+
+        val bannerAdapter = BannerVPAdapter(this)
+        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
+        bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
+
+        val bannerPager : ViewPager2 = binding.bannerPager
+        bannerPager.adapter = bannerAdapter
+        bannerPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+        val child = binding.bannerPager.getChildAt(0)
+        (child as? RecyclerView)?.overScrollMode = View.OVER_SCROLL_NEVER
+
+        val indicator : CircleIndicator3 = binding.indicator
+        indicator.setViewPager(bannerPager)
+
         return binding.root
     }
 
@@ -50,6 +106,14 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+    }
+
+    private fun sendToAlbumFragment(imageResId: Int, title: String, singer: String) {
+        val albumFragment = AlbumFragment.newInstance(imageResId, title, singer)
+        (context as MainActivity).supportFragmentManager.beginTransaction()
+            .replace(R.id.mainFrame, albumFragment)
+            .addToBackStack(null)
+            .commitAllowingStateLoss()
     }
 
     companion object {

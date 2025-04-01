@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.example.flo.databinding.FragmentAlbumBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,17 +20,20 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class AlbumFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private var imageResId: Int? = null
+    private var title: String? = null
+    private var singer: String? = null
 
     private lateinit var binding: FragmentAlbumBinding
+    private val information = arrayListOf("수록곡", "상세정보", "영상")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            imageResId = it.getInt("imageResId") // 전달받은 이미지 ID 저장
+            title = it.getString("title") // 전달받은 제목 저장
+            singer = it.getString("singer") // 전달받은 가수 이름 저장
         }
     }
 
@@ -38,9 +43,26 @@ class AlbumFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding= FragmentAlbumBinding.inflate(inflater, container, false)
+
+        imageResId?.let {
+            binding.albumAlbumIv.setImageResource(it) // 이미지 설정
+            binding.albumMusicTitleTv.text = title // 제목 설정
+            binding.albumSingerNameTv.text = singer // 가수 이름 설정
+        }
         binding.albumBackIv.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction().replace(R.id.mainFrame, HomeFragment()).commitAllowingStateLoss()
         }
+
+//        binding.songLalacLayout.setOnClickListener {
+//            Toast.makeText(activity, "LILAC", Toast.LENGTH_SHORT).show()
+//        }
+        val albumAdapter= AlbumVPAdapter(this)
+        binding.albumContentVp.adapter=albumAdapter
+        TabLayoutMediator(binding.albumContentTb, binding.albumContentVp){
+            tab, position ->
+            tab.text = information[position]
+
+        }.attach()
 
         return binding.root
     }
@@ -49,22 +71,12 @@ class AlbumFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment AlbumFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            AlbumFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+        fun newInstance(imageResId: Int, title: String, singer: String) = AlbumFragment().apply {
+            arguments = Bundle().apply {
+                putInt("imageResId", imageResId)
+                putString("title", title)
+                putString("singer", singer)
             }
+        }
     }
 }

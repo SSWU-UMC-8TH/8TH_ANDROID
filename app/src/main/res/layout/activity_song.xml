@@ -87,7 +87,7 @@
         app:srcCompat="@drawable/album1" />
 
     <ImageView
-        android:id="@+id/imageView11"
+        android:id="@+id/ic_shuffle"
         android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="34dp"
@@ -101,13 +101,13 @@
         app:srcCompat="@drawable/ic_shuffle" />
 
     <ImageView
-        android:id="@+id/imageView12"
+        android:id="@+id/preSong"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/play_stop"
         app:layout_constraintEnd_toStartOf="@+id/play_stop"
-        app:layout_constraintStart_toEndOf="@+id/imageView15"
+        app:layout_constraintStart_toEndOf="@+id/ic_repeat"
         app:layout_constraintTop_toTopOf="@+id/play_stop"
         app:srcCompat="@drawable/ic_pre_music" />
 
@@ -128,22 +128,22 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="34dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView11"
-        app:layout_constraintEnd_toStartOf="@+id/imageView11"
+        app:layout_constraintBottom_toBottomOf="@+id/ic_shuffle"
+        app:layout_constraintEnd_toStartOf="@+id/ic_shuffle"
         app:layout_constraintStart_toEndOf="@+id/play_stop"
-        app:layout_constraintTop_toTopOf="@+id/imageView11"
+        app:layout_constraintTop_toTopOf="@+id/ic_shuffle"
         app:srcCompat="@drawable/ic_next_music" />
 
     <ImageView
-        android:id="@+id/imageView15"
+        android:id="@+id/ic_repeat"
         android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="34dp"
         android:layout_marginEnd="49dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView12"
-        app:layout_constraintEnd_toStartOf="@+id/imageView12"
+        app:layout_constraintBottom_toBottomOf="@+id/preSong"
+        app:layout_constraintEnd_toStartOf="@+id/preSong"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView12"
+        app:layout_constraintTop_toTopOf="@+id/preSong"
         app:srcCompat="@drawable/ic_repeat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
