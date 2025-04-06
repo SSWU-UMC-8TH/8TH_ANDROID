@@ -76,14 +76,16 @@ class HomeFragment : Fragment() {
 
         Thread(PagerRunnable()).start()
 
+        val albumList = Album.list
+
         binding.album1.setOnClickListener {
-            sendToAlbumFragment(R.drawable.album1, "성민", "성민")
+            sendToAlbumFragment(albumList["modal_soul"]!!)
         }
         binding.album2.setOnClickListener {
-            sendToAlbumFragment(R.drawable.album2, "유성민", "유성민")
+            sendToAlbumFragment(albumList["lifes_like"]!!)
         }
         binding.album3.setOnClickListener {
-            sendToAlbumFragment(R.drawable.album3, "성민민", "성민민")
+            sendToAlbumFragment(albumList["ww3"]!!)
         }
 
         val bannerAdapter = BannerVPAdapter(this)
@@ -100,8 +102,9 @@ class HomeFragment : Fragment() {
         indicator.setViewPager(bannerPager)
 
         val recommendAdapter = RecommendVPAdapter(this)
-        recommendAdapter.addFragment(RecommendFragment(RecommendPanel.list[0]!!))
-        recommendAdapter.addFragment(RecommendFragment(RecommendPanel.list[1]!!))
+        val panelList = RecommendPanel.list
+        recommendAdapter.addFragment(RecommendFragment(panelList[0]!!))
+        recommendAdapter.addFragment(RecommendFragment(panelList[1]!!))
 
         val recommendPager : ViewPager2 = binding.recommendScroll
         recommendPager.adapter = recommendAdapter
@@ -116,8 +119,8 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun sendToAlbumFragment(imageResId: Int, title: String, singer: String) {
-        val albumFragment = AlbumFragment.newInstance(imageResId, title, singer)
+    private fun sendToAlbumFragment(album: Album) {
+        val albumFragment = AlbumFragment.newInstance(album)
         (context as MainActivity).supportFragmentManager.beginTransaction()
             .replace(R.id.mainFrame, albumFragment)
             .addToBackStack(null)

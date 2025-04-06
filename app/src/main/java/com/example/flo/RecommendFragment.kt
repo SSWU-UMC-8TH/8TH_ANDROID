@@ -22,12 +22,12 @@ class RecommendFragment(
 
         binding.mainImage.setImageResource(panel.panelImg)
         binding.ment.text = panel.ment
-        binding.albumCover1.setImageResource(R.drawable.img_lifes_like)
-        binding.albumCover2.setImageResource(R.drawable.img_modal_soul)
-        binding.title1.text = panel.album1.albumFragment.title
-        binding.title2.text = panel.album2.albumFragment.title
-        binding.singer1.text = panel.album1.albumFragment.singer
-        binding.singer2.text = panel.album2.albumFragment.singer
+        binding.albumCover1.setImageResource(panel.album1.coverImg)
+        binding.albumCover2.setImageResource(panel.album2.coverImg)
+        binding.title1.text = panel.album1.title
+        binding.title2.text = panel.album2.title
+        binding.singer1.text = panel.album1.singer
+        binding.singer2.text = panel.album2.singer
 
         return binding.root
     }

@@ -38,6 +38,8 @@ android {
         compose = true
         viewBinding = true
     }
+    apply (plugin="kotlin-parcelize")
+
 }
 
 dependencies {
