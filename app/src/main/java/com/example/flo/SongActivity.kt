@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.flo.databinding.ActivitySongBinding
 
 private const val KEY_TITLE="title"
@@ -36,16 +37,6 @@ class SongActivity : AppCompatActivity() {
         binding.singerText.text = intentSinger
         checkPlayingState()
 
-        // 플레이 버튼 클릭 이벤트 처리
-        var playStop = binding.playStop
-        playStop.setOnClickListener {
-            if (isPlaying)
-                playStop.setImageResource(R.drawable.ic_play)
-            else
-                playStop.setImageResource(R.drawable.ic_stop)
-            isPlaying = !isPlaying
-        }
-
         // 뒤로가기 버튼 클릭 이벤트 처리
         binding.backIcon.setOnClickListener {
             val resultIntent = Intent().apply {
@@ -57,12 +48,22 @@ class SongActivity : AppCompatActivity() {
             finish() // SongActivity 종료
         }
 
+        // 플레이 버튼 클릭 이벤트 처리
+        var playStop = binding.playStop
+        playStop.setOnClickListener {
+            if (isPlaying)
+                playStop.setImageResource(R.drawable.ic_play)
+            else
+                playStop.setImageResource(R.drawable.ic_stop)
+            isPlaying = !isPlaying
+        }
+
         // 셔플 버튼 클릭 이벤트 처리
         binding.icShuffle.setOnClickListener {
             if (isShuffle) {
-                binding.icShuffle.setColorFilter(R.color.gray)
+                binding.icShuffle.setColorFilter(ContextCompat.getColor(this, R.color.gray))
             } else {
-                binding.icShuffle.setColorFilter(R.color.black)
+                binding.icShuffle.setColorFilter(ContextCompat.getColor(this, R.color.black))
             }
             isShuffle = !isShuffle
         }
@@ -70,9 +71,9 @@ class SongActivity : AppCompatActivity() {
         // 반복 버튼 클릭 이벤트 처리
         binding.icRepeat.setOnClickListener {
             if (isRepeat) {
-                binding.icRepeat.setColorFilter(R.color.gray)
+                binding.icRepeat.setColorFilter(ContextCompat.getColor(this, R.color.gray))
             } else {
-                binding.icRepeat.setColorFilter(R.color.black)
+                binding.icRepeat.setColorFilter(ContextCompat.getColor(this, R.color.black))
             }
             isRepeat = !isRepeat
         }

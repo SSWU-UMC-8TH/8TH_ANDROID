@@ -41,9 +41,9 @@ class AlbumFragment : Fragment() {
             (context as MainActivity).supportFragmentManager.beginTransaction().replace(R.id.mainFrame, HomeFragment()).commitAllowingStateLoss()
         }
 
-//        binding.songLalacLayout.setOnClickListener {
-//            Toast.makeText(activity, "LILAC", Toast.LENGTH_SHORT).show()
-//        }
+     /*   binding.songLalacLayout.setOnClickListener {
+            Toast.makeText(activity, "LILAC", Toast.LENGTH_SHORT).show()
+        }*/
         val albumAdapter= AlbumVPAdapter(this, album!!.ment)
         binding.albumContentVp.adapter=albumAdapter
         TabLayoutMediator(binding.albumContentTb, binding.albumContentVp){
