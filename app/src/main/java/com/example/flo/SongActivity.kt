@@ -15,7 +15,9 @@ private const val KEY_PLAY="play"
 
 class SongActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySongBinding
-    private var isPlaying = true
+    private lateinit var song : Song
+    private lateinit var timer : Timer
+    private var isPlaying = false
     private var isShuffle = true
     private var isRepeat = true
     private var songNext = true
@@ -26,16 +28,8 @@ class SongActivity : AppCompatActivity() {
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // MainActivity에서 전달된 데이터를 직접 가져오기
-        val receivedIntent = intent
-        val intentTitle = receivedIntent.getStringExtra(KEY_TITLE) ?: "제목"
-        val intentSinger = receivedIntent.getStringExtra(KEY_SINGER) ?: "가수"
-        isPlaying = receivedIntent.getBooleanExtra(KEY_PLAY, false)
-
-        // UI 업데이트
-        binding.titleText.text = intentTitle
-        binding.singerText.text = intentSinger
-        checkPlayingState()
+        initSong()
+        setPlayer(song)
 
         // 뒤로가기 버튼 클릭 이벤트 처리
         binding.backIcon.setOnClickListener {
@@ -51,11 +45,7 @@ class SongActivity : AppCompatActivity() {
         // 플레이 버튼 클릭 이벤트 처리
         var playStop = binding.playStop
         playStop.setOnClickListener {
-            if (isPlaying)
-                playStop.setImageResource(R.drawable.ic_play)
-            else
-                playStop.setImageResource(R.drawable.ic_stop)
-            isPlaying = !isPlaying
+            checkPlayingState()
         }
 
         // 셔플 버튼 클릭 이벤트 처리
@@ -104,13 +94,76 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+    // MainActivity에서 전달된 데이터를 직접 가져오기
+    private fun initSong(){
+        val receivedIntent = intent
+        if(receivedIntent.hasExtra(KEY_TITLE) && receivedIntent.hasExtra(KEY_SINGER)){
+            song=Song(
+                receivedIntent.getStringExtra(KEY_TITLE)?: "제목",
+                receivedIntent.getStringExtra(KEY_SINGER)?: "가수",
+                receivedIntent.getIntExtra("second", 0),
+                receivedIntent.getIntExtra("playTime", 0),
+                receivedIntent.getBooleanExtra("isPlaying", false)
+            )
+        }
+        startTimer()
+    }
+
+    // UI 업데이트
+    private fun setPlayer(song : Song){
+        binding.titleText.text = song.title
+        binding.singerText.text = song.singer
+        binding.songStartTimeTv.text = String.format("%02d:%02d",song.second / 60, song.second % 60)
+        binding.songEndTimeTv.text = String.format("%02d:%02d",song.playTime / 60, song.playTime % 60)
+        binding.songProgressSb.progress = (song.second * 1000 / song.playTime)
+        checkPlayingState()
+    }
+
     // 노래 재생 상태 변경
     private fun checkPlayingState() {
+
         if (isPlaying) {
             binding.playStop.setImageResource(R.drawable.ic_play)
         } else {
             binding.playStop.setImageResource(R.drawable.ic_stop)
         }
         isPlaying = !isPlaying
+        song.isPlaying = isPlaying
+        timer.isPlaying = isPlaying
+    }
+
+    private fun startTimer(){
+        timer = Timer(song.playTime,song.isPlaying)
+        timer.start()
+    }
+
+    inner class Timer(private val playTime: Int, var isPlaying: Boolean = true) : Thread() {
+        private var second : Int = 0
+        private var mills : Float = 0f
+
+        override fun run(){
+            super.run()
+            while (true){
+
+                if(second>=playTime){
+                    break
+                }
+                if(isPlaying){
+                    sleep(50)
+                    mills+=50
+
+                    runOnUiThread {
+                        binding.songProgressSb.progress = ((mills/playTime)*100).toInt()
+                    }
+
+                    if(mills%1000==0f){
+                        runOnUiThread {
+                            binding.songStartTimeTv.text = String.format("%02d:%02d", second/60, second%60)
+                        }
+                        second++
+                    }
+                }
+            }
+        }
     }
 }

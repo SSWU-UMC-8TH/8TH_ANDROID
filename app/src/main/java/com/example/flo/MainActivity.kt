@@ -36,8 +36,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //handleIntentData()
-
+        val song = Song(binding.titleText.text.toString(), binding.singerText.text.toString(),0,60,false)
         setFragment(TAG_HOME, HomeFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
@@ -79,9 +78,11 @@ class MainActivity : AppCompatActivity() {
         // miniPlayer 클릭 시 SongActivity 호출
         binding.miniPlayer.setOnClickListener {
             val intent = Intent(this, SongActivity::class.java)
-            intent.putExtra(KEY_TITLE, songTitle)
-            intent.putExtra(KEY_SINGER, songSinger)
-            intent.putExtra(KEY_PLAY, !isPlaying)
+            intent.putExtra(KEY_TITLE, song.title)
+            intent.putExtra(KEY_SINGER, song.singer)
+            intent.putExtra("second", song.second)
+            intent.putExtra("playTime", song.playTime)
+            intent.putExtra("isPlaying", song.isPlaying)
             resultLauncher.launch(intent) // SongActivity 시작
         }
     }/*
