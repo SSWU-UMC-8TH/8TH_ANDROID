@@ -1,11 +1,13 @@
 package com.example.flo
 
+import android.util.SparseBooleanArray
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flo.databinding.ItemLockerAlbumBinding
 
 class LockerAlbumRVAdapter (private val albumList: ArrayList<Album>) : RecyclerView.Adapter<LockerAlbumRVAdapter.ViewHolder>() {
+    private val switchStatus = SparseBooleanArray()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -18,6 +20,25 @@ class LockerAlbumRVAdapter (private val albumList: ArrayList<Album>) : RecyclerV
 
     override fun onBindViewHolder(holder: LockerAlbumRVAdapter.ViewHolder, position: Int) {
         holder.bind(albumList[position])
+        holder.itemView.setOnClickListener {
+            itemClickListener.onItemClick(albumList[position])
+        }
+
+        holder.binding.itemSongMoreIv.setOnClickListener {
+            itemClickListener.onRemoveAlbum(position)
+        }
+        val switch = holder.binding.switchRV
+        switch.isChecked = switchStatus[position]
+        switch.setOnClickListener {
+            if (switch.isChecked) {
+                switchStatus.put(position, true)
+            }
+            else {
+                switchStatus.put(position, false)
+            }
+
+            notifyItemChanged(position)
+        }
     }
 
     override fun getItemCount(): Int = albumList.size
@@ -29,5 +50,25 @@ class LockerAlbumRVAdapter (private val albumList: ArrayList<Album>) : RecyclerV
             binding.itemSongSingerTv.text = album.singer
             binding.itemSongImgIv.setImageResource(album.coverImg!!)
         }
+    }
+    interface OnItemClickListener {
+        fun onItemClick(album : Album)
+        fun onRemoveAlbum(position: Int)
+    }
+
+    private lateinit var itemClickListener : OnItemClickListener
+
+    fun setItemClickListener(onItemClickListener: OnItemClickListener) {
+        this.itemClickListener = onItemClickListener
+    }
+
+    /*fun addItem(album: Album){
+        albumList.add(album)
+        notifyDataSetChanged()
+    }*/
+
+    fun removeItem(position: Int){
+        albumList.removeAt(position)
+        notifyDataSetChanged()
     }
 }

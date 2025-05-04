@@ -27,6 +27,7 @@ class LockerFragment : Fragment() {
         TabLayoutMediator(binding.lockerContentTb, binding.lockerContentVp){
                 tab, position -> tab.text = information[position] }.attach()
 
+
         return binding.root
     }
 }

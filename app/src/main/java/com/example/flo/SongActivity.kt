@@ -1,11 +1,16 @@
 package com.example.flo
 
+import android.app.ActivityManager
+import android.content.Context
+import android.content.Intent
 import android.media.MediaPlayer
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import com.example.flo.databinding.ActivitySongBinding
 import com.google.gson.Gson
 import java.util.Timer
@@ -28,16 +33,22 @@ class SongActivity : AppCompatActivity() {
         initSong()
         setPlayer(song)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1001)
+        }
+
 
         binding.songDownIb.setOnClickListener {
             finish()
         }
         binding.songMiniplayerIv.setOnClickListener {
             setPlayerStatus(true)
+            startMusicService()
         }
 
         binding.songPauseIv.setOnClickListener {
             setPlayerStatus(false)
+            stopMusicService()
         }
 
         binding.songRepeatIv.setOnClickListener {
@@ -56,8 +67,22 @@ class SongActivity : AppCompatActivity() {
         binding.songRandomActiveIv.setOnClickListener {
             setRandomStatus(true)
         }
-
     }
+
+    private fun startMusicService() {
+        Intent(this, ForegroundService::class.java).also { intent ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                startForegroundService(intent)
+            else
+                startService(intent)
+        }
+    }
+
+    private fun stopMusicService() {
+        stopService(Intent(this, ForegroundService::class.java))
+    }
+
+
 
     private fun initSong(){
         if(intent.hasExtra("title") && intent.hasExtra("singer")){
@@ -67,7 +92,9 @@ class SongActivity : AppCompatActivity() {
                 intent.getIntExtra("second", 0),
                 intent.getIntExtra("playTime", 0),
                 intent.getBooleanExtra("isPlaying", false),
-                intent.getStringExtra("music")!!
+                intent.getStringExtra("music")!!,
+                intent.getIntExtra("coverImg", R.drawable.img_album_exp2)
+
             )
         }
         startTimer()
@@ -83,7 +110,7 @@ class SongActivity : AppCompatActivity() {
         mediaPlayer = MediaPlayer.create(this, music)
         setPlayerStatus(song.isPlaying)
 
-        setPlayerStatus(song.isPlaying)
+        binding.songAlbumIv.setImageResource(song.coverImg ?: R.drawable.img_album_exp2)
 
     }
 

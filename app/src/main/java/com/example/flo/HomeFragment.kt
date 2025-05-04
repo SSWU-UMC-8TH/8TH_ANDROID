@@ -44,12 +44,19 @@ class HomeFragment : Fragment() {
 
         // 데이터 리스트 생성 더미 데이터
         albumDatas.apply {
-            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2))
-            add(Album("Next Level", "에스파 (AESPA)", R.drawable.img_album_exp3))
-            add(Album("Boy with Luv", "방탄소년단 (BTS)", R.drawable.img_album_exp4))
-            add(Album("BBoom BBoom", "모모랜드 (MOMOLAND)", R.drawable.img_album_exp5))
-            add(Album("Weekend", "태연 (Tae Yeon)", R.drawable.img_album_exp6))
+            add(Album("Butter", "방탄소년단 (BTS)", R.drawable.img_album_exp,
+                arrayListOf(
+                    Song("Butter", "방탄소년단 (BTS)", 0, 60, false, "music_butter", R.drawable.img_album_exp))))
+            add(Album("Lilac", "아이유 (IU)", R.drawable.img_album_exp2,
+                arrayListOf(Song("Lilac", "아이유 (IU)", 0, 60, false, "music_lilac", R.drawable.img_album_exp2))))
+            add(Album("Next Level", "에스파 (AESPA)", R.drawable.img_album_exp3,
+                arrayListOf(Song("Next Level", "에스파 (AESPA)", 0, 60, false, "music_next", R.drawable.img_album_exp3))))
+            add(Album("Boy with Luv", "방탄소년단 (BTS)", R.drawable.img_album_exp4,
+                arrayListOf(Song("Boy with Luv", "방탄소년단 (BTS)", 0, 60, false, "music_boy", R.drawable.img_album_exp4))))
+            add(Album("BBoom BBoom", "모모랜드 (MOMOLAND)", R.drawable.img_album_exp5,
+                arrayListOf(Song("BBoom BBoom", "모모랜드 (MOMOLAND)", 0, 60, false, "music_bboom", R.drawable.img_album_exp5))))
+            add(Album("Weekend", "태연 (Tae Yeon)", R.drawable.img_album_exp6,
+                arrayListOf(Song("Weekend", "태연 (Tae Yeon)", 0, 60, false, "music_flu", R.drawable.img_album_exp6))))
         }
 
         // 더미데이터랑 Adapter 연결
@@ -58,6 +65,7 @@ class HomeFragment : Fragment() {
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
         binding.homeTodayMusicAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
+
         albumRVAdapter.setMyItemClickListener(object: AlbumRVAdapter.MyItemClickListener{
             override fun onItemClick(album: Album) {
                 changeAlbumFragment(album)
@@ -65,6 +73,11 @@ class HomeFragment : Fragment() {
 
             override fun onRemoveAlbum(position: Int) {
                 albumRVAdapter.removeItem(position)
+            }
+            override fun onPlayAlbum(album: Album) {
+                album.songs?.firstOrNull()?.let { firstSong ->
+                    (activity as? MainActivity)?.updateMiniPlayerWithSong(firstSong)
+                }
             }
         })
 
@@ -108,6 +121,8 @@ class HomeFragment : Fragment() {
             .commitAllowingStateLoss()
     }
 
+
+
     private fun startBannerAutoSlide(adapter: BannerVPAdapter) {
         timer.schedule(object : TimerTask() {
             override fun run() {
@@ -140,6 +155,4 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         timer.cancel()
     }
-
-
 }
