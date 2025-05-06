@@ -34,6 +34,30 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+
+        val albumList = Album.list
+
+        binding.album1.setOnClickListener {
+            sendToAlbumFragment(albumList["modal_soul"]!!)
+        }
+        binding.album1Img.setImageResource(albumList["modal_soul"]!!.coverImg)
+        binding.album1Title.text = albumList["modal_soul"]!!.title
+        binding.album1Singer.text = albumList["modal_soul"]!!.singer
+
+        binding.album2.setOnClickListener {
+            sendToAlbumFragment(albumList["lifes_like"]!!)
+        }
+        binding.album2Img.setImageResource(albumList["lifes_like"]!!.coverImg)
+        binding.album2Title.text = albumList["lifes_like"]!!.title
+        binding.album2Singer.text = albumList["lifes_like"]!!.singer
+
+        binding.album3.setOnClickListener {
+            sendToAlbumFragment(albumList["ww3"]!!)
+        }
+        binding.album3Img.setImageResource(albumList["ww3"]!!.coverImg)
+        binding.album3Title.text = albumList["ww3"]!!.title
+        binding.album3Singer.text = albumList["ww3"]!!.singer
+
         var currentPage = 0
         //페이지 변경하기
         fun setPage(){
@@ -61,29 +85,6 @@ class HomeFragment : Fragment() {
         }
 
         Thread(PagerRunnable()).start()
-
-        val albumList = Album.list
-
-        binding.album1.setOnClickListener {
-            sendToAlbumFragment(albumList["modal_soul"]!!)
-        }
-        binding.album1Img.setImageResource(albumList["modal_soul"]!!.coverImg)
-        binding.album1Title.text = albumList["modal_soul"]!!.title
-        binding.album1Singer.text = albumList["modal_soul"]!!.singer
-
-        binding.album2.setOnClickListener {
-            sendToAlbumFragment(albumList["lifes_like"]!!)
-        }
-        binding.album2Img.setImageResource(albumList["lifes_like"]!!.coverImg)
-        binding.album2Title.text = albumList["lifes_like"]!!.title
-        binding.album2Singer.text = albumList["lifes_like"]!!.singer
-
-        binding.album3.setOnClickListener {
-            sendToAlbumFragment(albumList["ww3"]!!)
-        }
-        binding.album3Img.setImageResource(albumList["ww3"]!!.coverImg)
-        binding.album3Title.text = albumList["ww3"]!!.title
-        binding.album3Singer.text = albumList["ww3"]!!.singer
 
         val bannerAdapter = BannerVPAdapter(this)
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))

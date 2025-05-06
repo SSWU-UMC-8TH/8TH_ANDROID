@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.flo.databinding.ActivityMainBinding
 import android.widget.Toast
+import com.google.gson.Gson
 
 private const val TAG_HOME = "home_fragment"
 private const val TAG_AROUND = "around_fragment"
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
     private var songTitle: String = "제목"
     private var songSinger: String = "가수"
     private var isPlaying: Boolean = false
+    private var song : Song = Song()
+    private var gson : Gson = Gson()
 
     // ActivityResultLauncher 선언
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
@@ -36,7 +39,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val song = Song(binding.titleText.text.toString(), binding.singerText.text.toString(),0,60,false)
         setFragment(TAG_HOME, HomeFragment())
 
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
@@ -68,11 +70,11 @@ class MainActivity : AppCompatActivity() {
 
         var playStop=binding.playStop
         playStop.setOnClickListener {
-            if(isPlaying)
-                playStop.setImageResource(R.drawable.ic_play)
-            else
-                playStop.setImageResource(R.drawable.ic_stop)
             isPlaying=!isPlaying
+            if(isPlaying)
+                playStop.setImageResource(R.drawable.ic_stop)
+            else
+                playStop.setImageResource(R.drawable.ic_play)
         }
 
         // miniPlayer 클릭 시 SongActivity 호출
@@ -83,9 +85,35 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("second", song.second)
             intent.putExtra("playTime", song.playTime)
             intent.putExtra("isPlaying", song.isPlaying)
+            intent.putExtra("music", song.music)
             resultLauncher.launch(intent) // SongActivity 시작
         }
-    }/*
+    }
+
+    private fun setMiniPlayer(song: Song) {
+        binding.titleText.text = song.title
+        binding.singerText.text = song.singer
+        binding.mainStartTimeTv.text = String.format("%02d:%02d", song.second / 60, song.second % 60)
+        binding.mainEndTimeTv.text = String.format("%02d:%02d", song.playTime / 60, song.playTime % 60)
+        binding.mainProgressSb.progress = (song.second * 100000)/song.playTime
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val sharedPreferences=getSharedPreferences("song", MODE_PRIVATE)
+        val songJson = sharedPreferences.getString("songData", null)
+
+        song=if(songJson==null){
+            Song("Hypeboy", "뉴진스", 0, 60, false, "music_hypeboy")
+        }
+        else{
+            gson.fromJson(songJson, Song::class.java)
+        }
+
+        setMiniPlayer(song)
+    }
+
+    /*
     // onNewIntent에서 intent 데이터 갱신
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

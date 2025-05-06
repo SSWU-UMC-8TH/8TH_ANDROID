@@ -1,17 +1,20 @@
 package com.example.flo
 
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.flo.databinding.ActivitySongBinding
+import com.google.gson.Gson
 
 private const val KEY_TITLE="title"
 private const val KEY_SINGER="singer"
 private const val KEY_PLAY="play"
+
+private const val START = true
+private const val STOP = false
 
 class SongActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySongBinding
@@ -21,6 +24,11 @@ class SongActivity : AppCompatActivity() {
     private var isShuffle = true
     private var isRepeat = true
     private var songNext = true
+
+    private var second : Int = 0
+    private var mills : Float = 0f
+    private var mediaPlayer : MediaPlayer? = null
+    private var gson : Gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +41,7 @@ class SongActivity : AppCompatActivity() {
 
         // 뒤로가기 버튼 클릭 이벤트 처리
         binding.backIcon.setOnClickListener {
+            changePlayingState(STOP)
             val resultIntent = Intent().apply {
                 putExtra(KEY_TITLE, binding.titleText.text.toString())
                 putExtra(KEY_SINGER, binding.singerText.text.toString())
@@ -45,7 +54,7 @@ class SongActivity : AppCompatActivity() {
         // 플레이 버튼 클릭 이벤트 처리
         var playStop = binding.playStop
         playStop.setOnClickListener {
-            checkPlayingState()
+            changePlayingState()
         }
 
         // 셔플 버튼 클릭 이벤트 처리
@@ -60,12 +69,10 @@ class SongActivity : AppCompatActivity() {
 
         // 반복 버튼 클릭 이벤트 처리
         binding.icRepeat.setOnClickListener {
-            if (isRepeat) {
-                binding.icRepeat.setColorFilter(ContextCompat.getColor(this, R.color.gray))
-            } else {
-                binding.icRepeat.setColorFilter(ContextCompat.getColor(this, R.color.black))
-            }
-            isRepeat = !isRepeat
+            second=0
+            mills=0f
+            binding.songStartTimeTv.text = String.format("00:00")
+            binding.songProgressSb.progress = 0
         }
 
         // 다음 노래 버튼 클릭 이벤트 처리
@@ -94,6 +101,24 @@ class SongActivity : AppCompatActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        changePlayingState(STOP)
+        song.second=((binding.songProgressSb.progress * song.playTime)/100)/1000
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        val songJson = gson.toJson(song)
+        editor.putString("songData", songJson)
+        editor.apply()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timer.interrupt()
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
+
     // MainActivity에서 전달된 데이터를 직접 가져오기
     private fun initSong(){
         val receivedIntent = intent
@@ -103,33 +128,49 @@ class SongActivity : AppCompatActivity() {
                 receivedIntent.getStringExtra(KEY_SINGER)?: "가수",
                 receivedIntent.getIntExtra("second", 0),
                 receivedIntent.getIntExtra("playTime", 0),
-                receivedIntent.getBooleanExtra("isPlaying", false)
+                receivedIntent.getBooleanExtra("isPlaying", false),
+                receivedIntent.getStringExtra("music")?: "music"
             )
         }
         startTimer()
     }
 
-    // UI 업데이트
+    // UI 및 재생 상태 업데이트
     private fun setPlayer(song : Song){
         binding.titleText.text = song.title
         binding.singerText.text = song.singer
         binding.songStartTimeTv.text = String.format("%02d:%02d",song.second / 60, song.second % 60)
         binding.songEndTimeTv.text = String.format("%02d:%02d",song.playTime / 60, song.playTime % 60)
         binding.songProgressSb.progress = (song.second * 1000 / song.playTime)
-        checkPlayingState()
+        val music = resources.getIdentifier(song.music, "raw", this.packageName)
+        mediaPlayer = MediaPlayer.create(this, music)
+        changePlayingState(song.isPlaying)
     }
 
-    // 노래 재생 상태 변경
+    //노래 재생 or 정지
     private fun checkPlayingState() {
 
         if (isPlaying) {
-            binding.playStop.setImageResource(R.drawable.ic_play)
-        } else {
             binding.playStop.setImageResource(R.drawable.ic_stop)
+            if(mediaPlayer?.isPlaying==false) {
+                mediaPlayer?.start()
+            }
+        } else {
+            binding.playStop.setImageResource(R.drawable.ic_play)
+            if(mediaPlayer?.isPlaying==true){
+                mediaPlayer?.pause()
+            }
         }
-        isPlaying = !isPlaying
-        song.isPlaying = isPlaying
-        timer.isPlaying = isPlaying
+    }
+
+    // 노래 재생 상태 변경
+    private fun changePlayingState(playingState : Boolean = !isPlaying){
+
+        isPlaying = playingState
+        song.isPlaying = playingState
+        timer.isPlaying = playingState
+
+        checkPlayingState()
     }
 
     private fun startTimer(){
@@ -138,8 +179,6 @@ class SongActivity : AppCompatActivity() {
     }
 
     inner class Timer(private val playTime: Int, var isPlaying: Boolean = true) : Thread() {
-        private var second : Int = 0
-        private var mills : Float = 0f
 
         override fun run(){
             super.run()
