@@ -60,8 +60,8 @@ class MainActivity : AppCompatActivity() {
                 isPlaying = data?.getBooleanExtra(KEY_PLAY, isPlaying)?: isPlaying
 
                 // 받아온 데이터 처리
-                binding.miniPlayer.findViewById<TextView>(R.id.titleText).text = songTitle
-                binding.miniPlayer.findViewById<TextView>(R.id.singerText).text = songSinger
+                binding.miniPlayer.findViewById<TextView>(R.id.bottomnav_title_tv).text = songTitle
+                binding.miniPlayer.findViewById<TextView>(R.id.bottomnav_singer_tv).text = songSinger
 
                 checkPlayingState()
                 Toast.makeText(this, "SongActivity에서 받은 제목: $songTitle, 가수: $songSinger ", Toast.LENGTH_SHORT).show()
@@ -91,8 +91,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setMiniPlayer(song: Song) {
-        binding.titleText.text = song.title
-        binding.singerText.text = song.singer
+        binding.bottomnavTitleTv.text = song.title
+        binding.bottomnavSingerTv.text = song.singer
         binding.mainStartTimeTv.text = String.format("%02d:%02d", song.second / 60, song.second % 60)
         binding.mainEndTimeTv.text = String.format("%02d:%02d", song.playTime / 60, song.playTime % 60)
         binding.mainProgressSb.progress = (song.second * 100000)/song.playTime

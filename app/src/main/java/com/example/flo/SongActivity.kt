@@ -43,8 +43,8 @@ class SongActivity : AppCompatActivity() {
         binding.backIcon.setOnClickListener {
             changePlayingState(STOP)
             val resultIntent = Intent().apply {
-                putExtra(KEY_TITLE, binding.titleText.text.toString())
-                putExtra(KEY_SINGER, binding.singerText.text.toString())
+                putExtra(KEY_TITLE, binding.bottomnavTitleTv.text.toString())
+                putExtra(KEY_SINGER, binding.bottomnavSingerTv.text.toString())
                 putExtra(KEY_PLAY, !isPlaying)
             }
             setResult(RESULT_OK, resultIntent) // 결과 전달
@@ -78,12 +78,12 @@ class SongActivity : AppCompatActivity() {
         // 다음 노래 버튼 클릭 이벤트 처리
         binding.nextSong.setOnClickListener {
             if (songNext) {
-                binding.titleText.text = "지민"
-                binding.singerText.text = "지민"
+                binding.bottomnavTitleTv.text = "지민"
+                binding.bottomnavSingerTv.text = "지민"
                 songNext = false
             } else {
-                binding.titleText.text = "성민"
-                binding.singerText.text = "성민"
+                binding.bottomnavTitleTv.text = "성민"
+                binding.bottomnavSingerTv.text = "성민"
                 songNext = true
             }
         }
@@ -91,11 +91,11 @@ class SongActivity : AppCompatActivity() {
         // 이전 노래 버튼 클릭 이벤트 처리
         binding.preSong.setOnClickListener {
             if (songNext) {
-                binding.titleText.text = "지민"
-                binding.singerText.text = "지민"
+                binding.bottomnavTitleTv.text = "지민"
+                binding.bottomnavSingerTv.text = "지민"
             } else {
-                binding.titleText.text = "성민"
-                binding.singerText.text = "성민"
+                binding.bottomnavTitleTv.text = "성민"
+                binding.bottomnavSingerTv.text = "성민"
             }
             songNext = !songNext
         }
@@ -137,8 +137,8 @@ class SongActivity : AppCompatActivity() {
 
     // UI 및 재생 상태 업데이트
     private fun setPlayer(song : Song){
-        binding.titleText.text = song.title
-        binding.singerText.text = song.singer
+        binding.bottomnavTitleTv.text = song.title
+        binding.bottomnavSingerTv.text = song.singer
         binding.songStartTimeTv.text = String.format("%02d:%02d",song.second / 60, song.second % 60)
         binding.songEndTimeTv.text = String.format("%02d:%02d",song.playTime / 60, song.playTime % 60)
         binding.songProgressSb.progress = (song.second * 1000 / song.playTime)

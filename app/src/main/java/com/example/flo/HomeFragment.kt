@@ -1,5 +1,6 @@
 package com.example.flo
 
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Looper
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.databinding.FragmentHomeBinding
 import me.relex.circleindicator.CircleIndicator3
 import android.os.Handler
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flo.databinding.ItemAlbumBinding
 import com.google.gson.Gson
@@ -34,6 +36,8 @@ class HomeFragment : Fragment() {
     private var currentPage = 0
     private var pagerHandler: Handler = Handler(Looper.getMainLooper())
     private lateinit var autoScrollRunnable: Runnable
+
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +63,8 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         pagerHandler.removeCallbacks(autoScrollRunnable) // 배너 자동 스크롤 제거
         _binding = null // 바인딩 객체 해제
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 
     // 앨범 데이터 초기화
@@ -97,23 +103,7 @@ class HomeFragment : Fragment() {
 
     // 오늘의 앨범 RecyclerView 초기화
     private fun initTodayAlbumRV() {
-        val albumRVAdapter = AlbumRVAdapter<ItemAlbumBinding>(
-            albumList = albumDatas,
-            bindingInflater = { inflater, parent, _ ->
-                ItemAlbumBinding.inflate(inflater, parent, false) // 아이템 레이아웃 인플레이트
-            },
-            onBind = { binding, album, _ ->
-                // 앨범 데이터를 아이템 뷰에 바인딩
-                binding.itemAlbumTitleTv.text = album.title
-                binding.itemAlbumSigerTv.text = album.singer
-                binding.itemAlbumCoverImgIv.setImageResource(album.coverImg!!)
-            }
-        )
-
-        binding.homeTodayMusicAlbumRv.apply {
-            adapter = albumRVAdapter
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) // 수평 레이아웃으로 설정
-        }
+        val albumRVAdapter = AlbumRVAdapter(albumList = albumDatas)
 
         // 아이템 클릭 리스너 설정
         albumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener {
@@ -121,10 +111,28 @@ class HomeFragment : Fragment() {
                 changeAlbumFragment(album) // 앨범 클릭 시 AlbumFragment로 이동
             }
 
-            override fun onRemoveAlbum(position: Int) {
-                albumRVAdapter.removeItem(position) // 앨범 제거
+
+            override fun onPlayAlbum(position: Int) {
+                (activity as? MainActivity)?.let{
+                    it.findViewById<TextView>(R.id.bottomnav_title_tv).text = albumDatas[position].title
+                    it.findViewById<TextView>(R.id.bottomnav_singer_tv).text = albumDatas[position].singer
+
+                    if(mediaPlayer==null){
+                        val music = resources.getIdentifier("music_hypeboy", "raw", it.packageName)
+                        mediaPlayer = MediaPlayer.create(it, music)
+                    }
+
+                    if(mediaPlayer?.isPlaying()==false){
+                        mediaPlayer?.start()
+                    }
+                }
             }
         })
+
+        binding.homeTodayMusicAlbumRv.apply {
+            adapter = albumRVAdapter
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) // 수평 레이아웃으로 설정
+        }
     }
 
     // 배너 초기화 및 설정
