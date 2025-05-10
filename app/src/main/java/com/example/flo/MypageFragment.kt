@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flo.databinding.FragmentMypageBinding
-import com.example.flo.databinding.ItemMypageBinding
 
 
 class MypageFragment : Fragment() {
@@ -59,21 +58,10 @@ class MypageFragment : Fragment() {
 
     // 음악 RecyclerView 초기화
     private fun initSongList(){
-        val albumRVAdapter = AlbumRVAdapter<ItemMypageBinding>(
-            albumList = songDatas,
-            bindingInflater = { inflater, parent, _ ->
-                ItemMypageBinding.inflate(inflater, parent, false) // 아이템 레이아웃 인플레이트
-            },
-            onBind = { binding, album, _ ->
-                // 앨범 데이터를 아이템 뷰에 바인딩
-                binding.itemSongTitleTv.text = album.title
-                binding.itemSongSingerTv .text = album.singer
-                binding.itemSongImgIv.setImageResource(album.coverImg!!)
-            }
-        )
+        val mypageRVAdapter = MypageRVAdapter(songDatas)
 
         binding.mypageRV.apply {
-            adapter = albumRVAdapter
+            adapter = mypageRVAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) // 수직 레이아웃으로 설정
         }
 
