@@ -4,7 +4,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
-import com.example.flo.databinding.ItemAlbumBinding
 
 class AlbumRVAdapter<T: ViewBinding>(
     private val albumList: ArrayList<Album>,
