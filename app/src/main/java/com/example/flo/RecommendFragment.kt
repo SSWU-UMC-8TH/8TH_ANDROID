@@ -20,14 +20,19 @@ class RecommendFragment(
         // Inflate the layout for this fragment
         binding = FragmentRecommendBinding.inflate(inflater, container, false)
 
-        binding.mainImage.setImageResource(panel.panelImg)
         binding.ment.text = panel.ment
-        binding.albumCover1.setImageResource(panel.album1.coverImg)
-        binding.albumCover2.setImageResource(panel.album2.coverImg)
-        binding.title1.text = panel.album1.title
-        binding.title2.text = panel.album2.title
-        binding.singer1.text = panel.album1.singer
-        binding.singer2.text = panel.album2.singer
+
+        val panelImg = panel.panelImg
+        val album1 = panel.album1
+        val album2 = panel.album2
+
+        panelImg?.let{ binding.mainImage.setImageResource(it) }
+        album1?.let{ binding.albumCover1.setImageResource(it.coverImg!!) }
+        album2?.let{ binding.albumCover2.setImageResource(it.coverImg!!) }
+        binding.title1.text = album1?.title
+        binding.title2.text = album2?.title
+        binding.singer1.text = album1?.singer
+        binding.singer2.text = album2?.singer
 
         return binding.root
     }

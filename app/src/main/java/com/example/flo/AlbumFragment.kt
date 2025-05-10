@@ -8,23 +8,17 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.flo.databinding.FragmentAlbumBinding
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.gson.Gson
 
 class AlbumFragment : Fragment() {
-    var album : Album? = null
+    private lateinit var album : Album
+    private var gson: Gson = Gson()
     //var songFragment : SongFragment? = null
     //var detailFragment : DetailFragment? = null
     //var videoFragment : VideoFragment? = null
 
     private lateinit var binding: FragmentAlbumBinding
     private val information = arrayListOf("수록곡", "상세정보", "영상")
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            album = it.getParcelable<Album>("album")
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,9 +27,9 @@ class AlbumFragment : Fragment() {
         // Inflate the layout for this fragment
         binding= FragmentAlbumBinding.inflate(inflater, container, false)
 
-        binding.albumAlbumIv.setImageResource(album!!.coverImg)
-        binding.albumMusicTitleTv.text = album!!.title.toString()
-        binding.albumSingerNameTv.text = album!!.singer.toString()
+        val albumJson = arguments?.getString("album")
+        album = Gson().fromJson(albumJson, Album::class.java)
+        setInit(album)
 
         binding.albumBackIv.setOnClickListener {
             (context as MainActivity).supportFragmentManager.beginTransaction().replace(R.id.mainFrame, HomeFragment()).commitAllowingStateLoss()
@@ -44,7 +38,7 @@ class AlbumFragment : Fragment() {
      /*   binding.songLalacLayout.setOnClickListener {
             Toast.makeText(activity, "LILAC", Toast.LENGTH_SHORT).show()
         }*/
-        val albumAdapter= AlbumVPAdapter(this, album!!.ment)
+        val albumAdapter= AlbumVPAdapter(this, album.ment.toString())
         binding.albumContentVp.adapter=albumAdapter
         TabLayoutMediator(binding.albumContentTb, binding.albumContentVp){
             tab, position ->
@@ -53,6 +47,12 @@ class AlbumFragment : Fragment() {
         }.attach()
 
         return binding.root
+    }
+
+    private fun setInit(album: Album) {
+        binding.albumAlbumIv.setImageResource(album.coverImg!!)
+        binding.albumMusicTitleTv.text = album.title
+        binding.albumSingerNameTv.text = album.singer
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

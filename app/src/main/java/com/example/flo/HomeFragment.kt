@@ -12,15 +12,15 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.databinding.FragmentHomeBinding
 import me.relex.circleindicator.CircleIndicator3
 import android.os.Handler
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.flo.databinding.ItemAlbumBinding
+import com.google.gson.Gson
 
 class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
     private lateinit var binding: FragmentHomeBinding
-
-
+    private var albumDatas = ArrayList<Album>()
+    private var panelList = ArrayList<RecommendPanel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,30 +33,6 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-
-
-        val albumList = Album.list
-
-        binding.album1.setOnClickListener {
-            sendToAlbumFragment(albumList["modal_soul"]!!)
-        }
-        binding.album1Img.setImageResource(albumList["modal_soul"]!!.coverImg)
-        binding.album1Title.text = albumList["modal_soul"]!!.title
-        binding.album1Singer.text = albumList["modal_soul"]!!.singer
-
-        binding.album2.setOnClickListener {
-            sendToAlbumFragment(albumList["lifes_like"]!!)
-        }
-        binding.album2Img.setImageResource(albumList["lifes_like"]!!.coverImg)
-        binding.album2Title.text = albumList["lifes_like"]!!.title
-        binding.album2Singer.text = albumList["lifes_like"]!!.singer
-
-        binding.album3.setOnClickListener {
-            sendToAlbumFragment(albumList["ww3"]!!)
-        }
-        binding.album3Img.setImageResource(albumList["ww3"]!!.coverImg)
-        binding.album3Title.text = albumList["ww3"]!!.title
-        binding.album3Singer.text = albumList["ww3"]!!.singer
 
         var currentPage = 0
         //페이지 변경하기
@@ -86,6 +62,37 @@ class HomeFragment : Fragment() {
 
         Thread(PagerRunnable()).start()
 
+        albumDatas.apply{
+            add(Album("Butter", "BTS", R.drawable.img_album_exp))
+            add(Album("Lilac", "아이유(IU)", R.drawable.img_album_exp2))
+            add(Album("Next Level", "에스파(AESPA)", R.drawable.img_album_exp3))
+            add(Album("Boy with Luv", "BTS", R.drawable.img_album_exp4))
+            add(Album("BBoom BBoom", "모모랜드", R.drawable.img_album_exp5))
+            add(Album("Weekend", "태연", R.drawable.img_album_exp6))
+        }
+
+        val albumRVAdapter = AlbumRVAdapter<ItemAlbumBinding>(
+            albumList = albumDatas,
+            bindingInflater = { inflater, parent, _ -> ItemAlbumBinding.inflate(inflater, parent, false) },
+            onBind = { binding, album, _ ->
+                binding.itemAlbumTitleTv.text = album.title
+                binding.itemAlbumSigerTv.text = album.singer
+                binding.itemAlbumCoverImgIv.setImageResource(album.coverImg!!)
+            }
+            )
+        binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
+        binding.homeTodayMusicAlbumRv.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+
+        albumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener{
+            override fun onItemClick(album: Album) {
+                changeAlbumFragment(album)
+            }
+
+            override fun onRemoveAlbum(position: Int) {
+                albumRVAdapter.removeItem(position)
+            }
+        })
+
         val bannerAdapter = BannerVPAdapter(this)
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp))
         bannerAdapter.addFragment(BannerFragment(R.drawable.img_home_viewpager_exp2))
@@ -99,10 +106,20 @@ class HomeFragment : Fragment() {
         val indicator : CircleIndicator3 = binding.indicator
         indicator.setViewPager(bannerPager)
 
+        panelList.apply {
+            add(RecommendPanel(R.drawable.img_panel_jazz_hiphop,
+                Album("Modal Soul", "Nujabes",R.drawable.img_modal_soul),
+                Album("Lifes Like", "Jazzyfact",R.drawable.img_lifes_like),
+                "jazz"))
+            add(RecommendPanel(R.drawable.img_panel_lofi,
+                Album("WW3", "YE", R.drawable.img_ww3),
+                Album("I am Music", "Playboy Carti", R.drawable.img_i_am_music),
+                "hip hop"))
+        }
+
         val recommendAdapter = RecommendVPAdapter(this)
-        val panelList = RecommendPanel.list
-        recommendAdapter.addFragment(RecommendFragment(panelList[0]!!))
-        recommendAdapter.addFragment(RecommendFragment(panelList[1]!!))
+        recommendAdapter.addFragment(RecommendFragment(panelList[0]))
+        recommendAdapter.addFragment(RecommendFragment(panelList[1]))
 
         val recommendPager : ViewPager2 = binding.recommendScroll
         recommendPager.adapter = recommendAdapter
@@ -111,14 +128,14 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-    }
-
-    private fun sendToAlbumFragment(album: Album) {
-        val albumFragment = AlbumFragment.newInstance(album)
+    private fun changeAlbumFragment(album: Album) {
+        val albumFragment = AlbumFragment().apply {
+            arguments = Bundle().apply {
+                val gson = Gson()
+                val albumJson = gson.toJson(album)
+                putString("album", albumJson)
+            }
+        }
         (context as MainActivity).supportFragmentManager.beginTransaction()
             .replace(R.id.mainFrame, albumFragment)
             .addToBackStack(null)
