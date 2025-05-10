@@ -67,6 +67,11 @@ class SongActivity : AppCompatActivity() {
         binding.songRandomActiveIv.setOnClickListener {
             setRandomStatus(true)
         }
+
+        binding.songRepeatIv.setOnClickListener {
+            setRepeatStatus(false)
+            randomPlay()
+        }
     }
 
     private fun startMusicService() {
@@ -82,7 +87,23 @@ class SongActivity : AppCompatActivity() {
         stopService(Intent(this, ForegroundService::class.java))
     }
 
+    private fun randomPlay() {
+        binding.songProgressSb.progress = 0                     // SeekBar 맨 앞으로
+        binding.songStartTimeTv.text = String.format("%02d:%02d", 0, 0)  // 시간 00:00으로 초기화
+        song.second = 0                                         // song 객체 시간 초기화
+        song.isPlaying = true                                   // 곡 상태를 재생으로 설정
 
+        mediaPlayer?.seekTo(0)         // 음악 위치 초기화
+        mediaPlayer?.start()
+
+        setPlayerStatus(song.isPlaying)                         // 재생 상태 UI 반영 및 MediaPlayer 시작
+
+        if (!timer.isInterrupted) {
+            timer.interrupt()
+        }
+
+        startTimer()
+    }
 
     private fun initSong(){
         if(intent.hasExtra("title") && intent.hasExtra("singer")){
