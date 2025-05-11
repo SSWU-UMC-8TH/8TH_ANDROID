@@ -10,7 +10,7 @@
         android:id="@+id/locker_savedSong_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/item_locker_album"
+        tools:listitem="@layout/item_song"
         android:overScrollMode="never"
         android:orientation="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>

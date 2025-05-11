@@ -17,6 +17,8 @@ data class Song(
     var music: String = "",
     var coverImg: Int? = null,
     var isLike: Boolean = false,
+    var albumIdx: Int = 0,
+
     @Ignore var isRandom: Boolean = false,
     @Ignore var isRepeat: Boolean = false
 ){

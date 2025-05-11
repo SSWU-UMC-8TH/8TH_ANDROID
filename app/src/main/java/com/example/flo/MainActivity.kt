@@ -139,17 +139,6 @@ class MainActivity : AppCompatActivity() {
         // 재생은 하지 않음!
     }
 
-    /*private fun playMusic(fileName: String) {
-        updateSeekBarThread?.interrupt()
-        mediaPlayer?.release()
-        mediaPlayer = null
-
-        val resId = resources.getIdentifier(fileName, "raw", packageName)
-        mediaPlayer = MediaPlayer.create(this, resId)
-        mediaPlayer?.start()
-        startSeekBarUpdate()
-    }*/
-
     private fun startSeekBarUpdate() {
         updateSeekBarThread = object : Thread() {
             override fun run() {
@@ -188,23 +177,25 @@ class MainActivity : AppCompatActivity() {
         if (songs.isNotEmpty()) return
 
         songDB.songDao().insert(
-            Song("Lilac", "아이유 (IU)", 0, 200, false, "music_lilac", R.drawable.img_album_exp2, false)
+            Song("Lilac", "아이유 (IU)", 0, 200, false, "music_lilac", R.drawable.img_album_exp2, false, 1)
         )
         songDB.songDao().insert(
-            Song("Flu", "아이유 (IU)", 0, 200, false, "music_flu", R.drawable.img_album_exp2, false)
+            Song("Flu", "아이유 (IU)", 0, 200, false, "music_flu", R.drawable.img_album_exp2, false, 1)
         )
         songDB.songDao().insert(
-            Song("Butter", "방탄소년단 (BTS)", 0, 190, false, "music_butter", R.drawable.img_album_exp, false)
+            Song("Butter", "방탄소년단 (BTS)", 0, 190, false, "music_butter", R.drawable.img_album_exp, false, 2)
         )
         songDB.songDao().insert(
-            Song("Next Level", "에스파 (AESPA)", 0, 210, false, "music_next", R.drawable.img_album_exp3, false)
+            Song("Next Level", "에스파 (AESPA)", 0, 210, false, "music_next", R.drawable.img_album_exp3, false, 3)
         )
         songDB.songDao().insert(
-            Song("Boy with Luv", "방탄소년단 (BTS)", 0, 230, false, "music_boy", R.drawable.img_album_exp4, false)
+            Song("Boy with Luv", "방탄소년단 (BTS)", 0, 230, false, "music_boy", R.drawable.img_album_exp4, false, 4)
         )
         songDB.songDao().insert(
-            Song("BBoom BBoom", "모모랜드 (MOMOLAND)", 0, 240, false, "music_bboom", R.drawable.img_album_exp5, false)
+            Song("BBoom BBoom", "모모랜드 (MOMOLAND)", 0, 240, false, "music_bboom", R.drawable.img_album_exp5, false, 5)
         )
+        val songDBData = songDB.songDao().getSongs()
+        Log.d("DB data", songDBData.toString())
     }
 
     private fun initBottomNavigation() {

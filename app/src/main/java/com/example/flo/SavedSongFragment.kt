@@ -96,6 +96,7 @@ import com.example.flo.databinding.FragmentLockerSavedsongBinding
 class SavedSongFragment : Fragment() {
     lateinit var binding: FragmentLockerSavedsongBinding
     lateinit var songDB: SongDatabase
+    lateinit var songRVAdapter: SavedSongRVAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -103,9 +104,7 @@ class SavedSongFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentLockerSavedsongBinding.inflate(inflater, container, false)
-
         songDB = SongDatabase.getInstance(requireContext())!!
-
         return binding.root
     }
 
@@ -117,17 +116,27 @@ class SavedSongFragment : Fragment() {
     private fun initRecyclerview(){
         binding.lockerSavedSongRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
 
-        val songRVAdapter = SavedSongRVAdapter()
+        songRVAdapter = SavedSongRVAdapter()
+        binding.lockerSavedSongRecyclerView.adapter = songRVAdapter
 
         songRVAdapter.setMyItemClickListener(object : SavedSongRVAdapter.MyItemClickListener{
             override fun onRemoveSong(songId: Int) {
                 songDB.songDao().updateIsLikeById(false,songId)
             }
-
         })
 
-        binding.lockerSavedSongRecyclerView.adapter = songRVAdapter
-
         songRVAdapter.addSongs(songDB.songDao().getLikedSongs(true) as ArrayList<Song>)
+    }
+
+    fun selectAllSongs(select: Boolean) {
+        songRVAdapter.selectAll(select)
+    }
+
+    fun deleteSelectedSongs() {
+        val selectedSongs = songRVAdapter.getSelectedSongs()
+        for (song in selectedSongs) {
+            songDB.songDao().updateIsLikeById(false, song.id)
+        }
+        songRVAdapter.removeSelectedSongs()
     }
 }

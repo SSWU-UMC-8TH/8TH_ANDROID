@@ -9,6 +9,8 @@ import com.example.flo.databinding.ItemSongBinding
 class SavedSongRVAdapter() :
     RecyclerView.Adapter<SavedSongRVAdapter.ViewHolder>() {
     private val songs = ArrayList<Song>()
+    private val selectedStates = mutableMapOf<Int, Boolean>()
+
     interface MyItemClickListener{
         fun onRemoveSong(songId: Int)
     }
@@ -27,6 +29,14 @@ class SavedSongRVAdapter() :
 
     override fun onBindViewHolder(holder: SavedSongRVAdapter.ViewHolder, position: Int) {
         holder.bind(songs[position])
+        holder.binding.switchRV.setOnCheckedChangeListener(null)
+        holder.binding.switchRV.isChecked = selectedStates[position] ?: false
+
+        // 새 리스너 등록
+        holder.binding.switchRV.setOnCheckedChangeListener { _, isChecked ->
+            selectedStates[position] = isChecked
+        }
+
         holder.binding.itemSongMoreIv.setOnClickListener {
             mItemClickListener.onRemoveSong(songs[position].id)
             removeSong(position)
@@ -46,6 +56,28 @@ class SavedSongRVAdapter() :
     @SuppressLint("NotifyDataSetChanged")
     private fun removeSong(position: Int){
         songs.removeAt(position)
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun selectAll(select: Boolean) {
+        for (i in songs.indices) {
+            selectedStates[i] = select
+        }
+        notifyDataSetChanged()
+    }
+
+    fun getSelectedSongs(): List<Song> {
+        return songs.filterIndexed { index, _ -> selectedStates[index] == true }
+    }
+
+    fun removeSelectedSongs() {
+        for (i in songs.size - 1 downTo 0) {
+            if (selectedStates[i] == true) {
+                songs.removeAt(i)
+                selectedStates.remove(i)
+            }
+        }
         notifyDataSetChanged()
     }
 

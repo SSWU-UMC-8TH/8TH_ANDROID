@@ -141,19 +141,21 @@ class SongActivity : AppCompatActivity() {
 
         if (!isLike){
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
+            CustomSnackbar.make(binding.root, "좋아요를 추가했어요").show()
         } else{
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
+            CustomSnackbar.make(binding.root, "좋아요를 취소했어요").show()
         }
     }
 
     private fun moveSong(direct: Int){
         if (nowPos + direct < 0){
-            Toast.makeText(this,"first song",Toast.LENGTH_SHORT).show()
+            CustomSnackbar.make(binding.root, "처음 곡입니다.").show()
             return
         }
 
         if (nowPos + direct >= songs.size){
-            Toast.makeText(this,"last song",Toast.LENGTH_SHORT).show()
+            CustomSnackbar.make(binding.root, "마지막 곡입니다").show()
             return
         }
 
