@@ -12,6 +12,9 @@ import com.google.gson.Gson
 private const val KEY_TITLE="title"
 private const val KEY_SINGER="singer"
 private const val KEY_PLAY="play"
+private const val KEY_SECOND="second"
+private const val KEY_PLAYTIME="playTime"
+private const val KEY_MUSIC="music"
 
 private const val START = true
 private const val STOP = false
@@ -46,6 +49,9 @@ class SongActivity : AppCompatActivity() {
                 putExtra(KEY_TITLE, binding.bottomnavTitleTv.text.toString())
                 putExtra(KEY_SINGER, binding.bottomnavSingerTv.text.toString())
                 putExtra(KEY_PLAY, !isPlaying)
+                putExtra(KEY_SECOND, song.second)
+                putExtra(KEY_PLAYTIME, song.playTime)
+                putExtra(KEY_MUSIC, song.music)
             }
             setResult(RESULT_OK, resultIntent) // 결과 전달
             finish() // SongActivity 종료
@@ -126,10 +132,10 @@ class SongActivity : AppCompatActivity() {
             song=Song(
                 receivedIntent.getStringExtra(KEY_TITLE)?: "제목",
                 receivedIntent.getStringExtra(KEY_SINGER)?: "가수",
-                receivedIntent.getIntExtra("second", 0),
-                receivedIntent.getIntExtra("playTime", 0),
-                receivedIntent.getBooleanExtra("isPlaying", false),
-                receivedIntent.getStringExtra("music")?: "music"
+                receivedIntent.getIntExtra(KEY_SECOND, 0),
+                receivedIntent.getIntExtra(KEY_PLAYTIME, 40),
+                receivedIntent.getBooleanExtra(KEY_PLAY, false),
+                receivedIntent.getStringExtra(KEY_MUSIC)?: "music"
             )
         }
         startTimer()
