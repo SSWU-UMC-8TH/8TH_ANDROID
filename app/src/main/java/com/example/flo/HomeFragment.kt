@@ -39,8 +39,6 @@ class HomeFragment : Fragment() {
     private var pagerHandler: Handler = Handler(Looper.getMainLooper())
     private lateinit var autoScrollRunnable: Runnable
 
-    private var mediaPlayer: MediaPlayer? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initAlbumData() // 앨범 데이터 초기화
@@ -65,8 +63,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         pagerHandler.removeCallbacks(autoScrollRunnable) // 배너 자동 스크롤 제거
         _binding = null // 바인딩 객체 해제
-        mediaPlayer?.release()
-        mediaPlayer = null
     }
 
     // 앨범 데이터 초기화
@@ -110,18 +106,12 @@ class HomeFragment : Fragment() {
 
 
             override fun onPlayAlbum(position: Int) {
-                (activity as? MainActivity)?.let{
-                    it.findViewById<TextView>(R.id.main_miniplayer_title_tv).text = albums[position].title
-                    it.findViewById<TextView>(R.id.main_miniplayer_singer_tv).text = albums[position].singer
-
-                    if(mediaPlayer==null){
-                        val music = resources.getIdentifier("music_hypeboy", "raw", it.packageName)
-                        mediaPlayer = MediaPlayer.create(it, music)
-                    }
-
-                    if(mediaPlayer?.isPlaying()==false){
-                        mediaPlayer?.start()
-                    }
+                (activity as? MainActivity)?.run{
+                    musicService?.let{ it.pauseMusic() }
+                    songs.clear()
+                    songs.addAll(songDB.songDao().getSongsByAlbum(albums[position].albumIdx))
+                    nowPos=0
+                    setPlayer(songs[nowPos])
                 }
             }
         })

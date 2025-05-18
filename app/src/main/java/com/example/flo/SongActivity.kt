@@ -1,8 +1,12 @@
 package com.example.flo
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -29,11 +33,26 @@ class SongActivity : AppCompatActivity() {
 
     private var second : Int = 0
     private var mills : Float = 0f
-    private var mediaPlayer : MediaPlayer? = null
+    //private var mediaPlayer : MediaPlayer? = null
 
     private val songs=arrayListOf<Song>()
     private lateinit var songDB: SongDatabase
     private var nowPos = 0
+
+    private var musicService: MusicService? = null
+    private var isBound = false
+
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+            val musicBinder = binder as MusicService.MusicBinder
+            musicService = musicBinder.getService()
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,10 +61,17 @@ class SongActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
+        Intent(this, MusicService::class.java).also { intent ->
+            bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        }
         initPlayList()
         initSong()
         initClickListener()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
     }
 
     override fun onPause() {
@@ -54,11 +80,18 @@ class SongActivity : AppCompatActivity() {
         toMainActivity()
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         timer.interrupt()
-        mediaPlayer?.release()
-        mediaPlayer = null
     }
 
     // 음악 데이터베이스 초기화
@@ -122,6 +155,7 @@ class SongActivity : AppCompatActivity() {
 
         Log.d("now Song ID",songs[nowPos].id.toString())
         startTimer()
+        musicService?.changeSong(this,songs[nowPos])
         setPlayer(songs[nowPos])
     }
 
@@ -161,12 +195,11 @@ class SongActivity : AppCompatActivity() {
         }
 
         nowPos+=direct
+        musicService?.pauseMusic()
+        musicService?.changeSong(this, songs[nowPos])
 
         timer.interrupt()
         startTimer()
-
-        mediaPlayer?.release()
-        mediaPlayer = null
 
         setPlayer(songs[nowPos])
     }
@@ -191,16 +224,13 @@ class SongActivity : AppCompatActivity() {
         binding.songAlbumIv.setImageResource(song.coverImg!!)
         binding.songProgressSb.progress = (song.second * 1000 / song.playTime)
 
-        val music = resources.getIdentifier(song.music, "raw", this.packageName)
-        mediaPlayer = MediaPlayer.create(this, music)
-
         if(song.isLike){
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
         }else{
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
         }
 
-        setPlayerStatus(song.isPlaying)
+        setPlayerStatus(isPlaying)
     }
 
     //노래 재생 or 정지
@@ -208,18 +238,14 @@ class SongActivity : AppCompatActivity() {
 
         if (isPlaying) {
             binding.songMiniplayerIv.setImageResource(R.drawable.ic_stop)
-            if(mediaPlayer?.isPlaying==false) {
-                mediaPlayer?.start()
-            }
+            musicService?.playMusic()
         } else {
             binding.songMiniplayerIv.setImageResource(R.drawable.ic_play)
-            if(mediaPlayer?.isPlaying==true){
-                mediaPlayer?.pause()
-            }
+            musicService?.pauseMusic()
         }
     }
 
-    // 노래 재생 상태 변경
+    // 노래 재생 상태 설정
     private fun setPlayerStatus(playingState : Boolean = !isPlaying){
 
         isPlaying = playingState
