@@ -3,7 +3,7 @@ package com.example.flo
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [Album::class], version = 1)
+@Database(entities = [Album::class], version = 3)
 abstract class AlbumDatabase : RoomDatabase() {
     abstract fun albumDao(): AlbumDao
 
@@ -11,7 +11,7 @@ abstract class AlbumDatabase : RoomDatabase() {
         private var instance: AlbumDatabase? = null
 
         @Synchronized
-        fun getInstance(context: Context): AlbumDatabase?{
+        fun getInstance(context: Context): AlbumDatabase{
             if(instance==null){
                 synchronized(AlbumDatabase::class) {
                     instance = Room.databaseBuilder(
@@ -21,7 +21,7 @@ abstract class AlbumDatabase : RoomDatabase() {
                     ).allowMainThreadQueries().build()
                 }
             }
-            return instance
+            return instance!!
         }
     }
 }

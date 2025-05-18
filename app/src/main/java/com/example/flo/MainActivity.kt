@@ -30,9 +30,14 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
+
     private val songs=arrayListOf<Song>()
     private var nowPos = 0
     private lateinit var songDB: SongDatabase
+
+    private val albums=arrayListOf<Album>()
+    private var nowAlbum = 0
+    private lateinit var albumDB: AlbumDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
 
         inputDummySong()                // 음악 데이터베이스 초기화
+        setPlayList()
+        inputDummyAlbum()               // 앨범 데이터베이스 초기화
         initFragment()                  // 프라그먼트 초기화
         initBottomNavigation()          // 네비게이션 바 초기화
         initClickListener()             // 클릭 이벤트 할당
@@ -137,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
     // 재생할 음악 리스트 초기화
     private fun setPlayList(){
-        songDB = SongDatabase.getInstance(this)!!
+        songDB = SongDatabase.getInstance(this)
         songs.addAll(songDB.songDao().getSongs())
     }
 
@@ -218,7 +225,12 @@ class MainActivity : AppCompatActivity() {
     // 음악 데이터베이스 초기화
     private fun inputDummySong(){
 
-        setPlayList()
+        val songDB = SongDatabase.getInstance(this)
+
+        songDB.songDao().deleteAll()
+        songDB.songDao().resetAutoIncrement()
+
+        val songs = songDB.songDao().getSongs()
 
         if(songs.isNotEmpty()) return
 
@@ -227,7 +239,7 @@ class MainActivity : AppCompatActivity() {
         songDB.songDao().insert(Song("Next Level", "에스파(AESPA)", 0, 20, false, "music_next", R.drawable.img_album_exp3, 3))
         songDB.songDao().insert(Song("Boy with Luv", "방탄소년단", 0, 20, false, "music_boy", R.drawable.img_album_exp4, 4))
         songDB.songDao().insert(Song("BBoom BBoom", "모모랜드", 0, 20, false, "music_bboom", R.drawable.img_album_exp5, 5))
-        songDB.songDao().insert(Song("Butter", "방탄소년단", 0, 20, false, "music_butter", R.drawable.img_album_exp, 1))
+        songDB.songDao().insert(Song("Butter", "방탄소년단", 0, 20, false, "music_butter", R.drawable.img_album_exp, 4))
 
         val _songs = songDB.songDao().getSongs()
         Log.d("songDB data", _songs.toString())
@@ -235,9 +247,11 @@ class MainActivity : AppCompatActivity() {
 
     // 앨범 데이터베이스 초기화
     private fun inputDummyAlbum(){
-        val albumDB = AlbumDatabase.getInstance(this)!!
+        val albumDB = AlbumDatabase.getInstance(this)
 
-        val albums = songDB.songDao().getSongs()
+        albumDB.albumDao().deleteAll()
+
+        val albums = albumDB.albumDao().getAlbums()
 
         if(albums.isNotEmpty()) return
 

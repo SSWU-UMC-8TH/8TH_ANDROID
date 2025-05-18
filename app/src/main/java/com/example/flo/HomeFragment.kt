@@ -12,9 +12,9 @@ import androidx.viewpager2.widget.ViewPager2
 import com.example.flo.databinding.FragmentHomeBinding
 import me.relex.circleindicator.CircleIndicator3
 import android.os.Handler
+import android.util.Log
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.flo.databinding.ItemAlbumBinding
 import com.google.gson.Gson
 
 class HomeFragment : Fragment() {
@@ -31,7 +31,9 @@ class HomeFragment : Fragment() {
         }
 
     // 앨범과 패널 데이터를 담을 리스트
-    private val albumDatas = ArrayList<Album>()
+    private lateinit var albumDB: AlbumDatabase
+    private val albums = ArrayList<Album>()
+    private var nowAlbum: Int = 0
     private val panelList = ArrayList<RecommendPanel>()
     private var currentPage = 0
     private var pagerHandler: Handler = Handler(Looper.getMainLooper())
@@ -69,18 +71,9 @@ class HomeFragment : Fragment() {
 
     // 앨범 데이터 초기화
     private fun initAlbumData() {
-        albumDatas.apply {
-            add(Album(1, "Butter", "BTS", R.drawable.img_album_exp))
-            add(Album(2, "Lilac", "아이유(IU)", R.drawable.img_album_exp2))
-            add(Album(3, "Next Level", "에스파(AESPA)", R.drawable.img_album_exp3))
-            add(Album(4, "Boy with Luv", "BTS", R.drawable.img_album_exp4))
-            add(Album(5, "BBoom BBoom", "모모랜드", R.drawable.img_album_exp5))
-            add(Album(6, "Weekend", "태연", R.drawable.img_album_exp6))
-            add(Album(7, "Modal Soul", "Nujabes", R.drawable.img_modal_soul))
-            add(Album(8, "Lifes Like", "Jazzyfact", R.drawable.img_lifes_like))
-            add(Album(9, "WW3", "YE", R.drawable.img_ww3))
-            add(Album(10, "I am Music", "Playboy Carti", R.drawable.img_i_am_music))
-        }
+        albumDB= AlbumDatabase.getInstance(this.requireContext())
+        albums.addAll(albumDB.albumDao().getAlbums())
+        Log.d("albumDB data", albumDB.albumDao().getAlbums().toString())
     }
 
     // 패널 데이터 초기화
@@ -89,16 +82,16 @@ class HomeFragment : Fragment() {
             add(
                 RecommendPanel(
                     R.drawable.img_panel_jazz_hiphop,
-                    Album(7, "Modal Soul", "Nujabes", R.drawable.img_modal_soul),
-                    Album(8, "Lifes Like", "Jazzyfact", R.drawable.img_lifes_like),
+                    albumDB.albumDao().getAlbum(7),
+                    albumDB.albumDao().getAlbum(8),
                     "jazz"
                 )
             )
             add(
                 RecommendPanel(
                     R.drawable.img_panel_lofi,
-                    Album(9, "WW3", "YE", R.drawable.img_ww3),
-                    Album(10, "I am Music", "Playboy Carti", R.drawable.img_i_am_music),
+                    albumDB.albumDao().getAlbum(9),
+                    albumDB.albumDao().getAlbum(10),
                     "hip hop"
                 )
             )
@@ -107,7 +100,7 @@ class HomeFragment : Fragment() {
 
     // 오늘의 앨범 RecyclerView 초기화
     private fun initTodayAlbumRV() {
-        val albumRVAdapter = AlbumRVAdapter(albumList = albumDatas)
+        val albumRVAdapter = AlbumRVAdapter(albumList = albums)
 
         // 아이템 클릭 리스너 설정
         albumRVAdapter.setMyItemClickListener(object : AlbumRVAdapter.MyItemClickListener {
@@ -118,8 +111,8 @@ class HomeFragment : Fragment() {
 
             override fun onPlayAlbum(position: Int) {
                 (activity as? MainActivity)?.let{
-                    it.findViewById<TextView>(R.id.main_miniplayer_title_tv).text = albumDatas[position].title
-                    it.findViewById<TextView>(R.id.main_miniplayer_singer_tv).text = albumDatas[position].singer
+                    it.findViewById<TextView>(R.id.main_miniplayer_title_tv).text = albums[position].title
+                    it.findViewById<TextView>(R.id.main_miniplayer_singer_tv).text = albums[position].singer
 
                     if(mediaPlayer==null){
                         val music = resources.getIdentifier("music_hypeboy", "raw", it.packageName)

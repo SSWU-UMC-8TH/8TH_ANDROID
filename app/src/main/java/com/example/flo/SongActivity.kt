@@ -63,7 +63,7 @@ class SongActivity : AppCompatActivity() {
 
     // 음악 데이터베이스 초기화
     private fun initPlayList(){
-        songDB = SongDatabase.getInstance(this)!!
+        songDB = SongDatabase.getInstance(this)
         songs.addAll(songDB.songDao().getSongs())
     }
 
@@ -135,15 +135,17 @@ class SongActivity : AppCompatActivity() {
         editor.apply()
     }
 
-    // 좋아요 이미지 업데이트
+    // 좋아요 상태 업데이트
     private fun setLike(isLike: Boolean){
         songs[nowPos].isLike=!isLike
         songDB.songDao().updateIsLikeById(!isLike, songs[nowPos].id)
 
         if(!isLike){
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
+            Toast.makeText(this, "좋아요", Toast.LENGTH_SHORT).show()
         }else{
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
+            Toast.makeText(this, "좋아요 취소", Toast.LENGTH_SHORT).show()
         }
     }
 
