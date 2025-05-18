@@ -1,9 +1,6 @@
 package com.example.flo
 
-import android.os.Parcelable
 import androidx.room.*
-import kotlinx.parcelize.IgnoredOnParcel
-import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "SongTable")
 data class Song (
@@ -13,8 +10,9 @@ data class Song (
     var playTime: Int = 50,
     var isPlaying : Boolean = false,
     var music : String = "",
-    var coverImg: Int?= null,
-    var isLike : Boolean = false
+    var coverImg: Int? = null,
+    var albumIdx : Int = 0,
+    var isLike : Boolean = false,
 ){
     @PrimaryKey(autoGenerate = true) var id: Int = 0
 }

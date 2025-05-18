@@ -1,14 +1,14 @@
 package com.example.flo
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.*
 
-@Parcelize
+@Entity(tableName = "AlbumTable")
 data class Album(
-    var title: String? = "",
-    var singer: String? = "",
+    @PrimaryKey(autoGenerate = false) var albumIdx: Int = 0,
+    var title: String = "",
+    var singer: String = "",
     var coverImg: Int? = null,
+    var ment: String = "hi",
     //var songs: ArrayList<Song>? = null,
-    var ment: String? = "hi"
     //val video
-):Parcelable
+)

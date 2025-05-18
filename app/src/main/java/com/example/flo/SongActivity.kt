@@ -26,13 +26,10 @@ class SongActivity : AppCompatActivity() {
     private lateinit var timer : Timer
     private var isPlaying = false
     private var isShuffle = true
-    private var isRepeat = true
-    private var songNext = true
 
     private var second : Int = 0
     private var mills : Float = 0f
     private var mediaPlayer : MediaPlayer? = null
-    private var gson : Gson = Gson()
 
     private val songs=arrayListOf<Song>()
     private lateinit var songDB: SongDatabase
@@ -44,6 +41,7 @@ class SongActivity : AppCompatActivity() {
         binding = ActivitySongBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         initPlayList()
         initSong()
         initClickListener()
@@ -53,12 +51,7 @@ class SongActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         setPlayerStatus(STOP)
-        songs[nowPos].second=((binding.songProgressSb.progress * songs[nowPos].playTime)/100)/1000
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        editor.putInt("songId", songs[nowPos].id)
-        editor.apply()
+        toMainActivity()
     }
 
     override fun onDestroy() {
@@ -78,16 +71,6 @@ class SongActivity : AppCompatActivity() {
     private fun initClickListener(){
         // 뒤로가기 버튼 클릭 이벤트 처리
         binding.songDownIb.setOnClickListener {
-            setPlayerStatus(STOP)
-            val resultIntent = Intent().apply {
-                putExtra(KEY_TITLE, binding.songMusicTitleTv.text.toString())
-                putExtra(KEY_SINGER, binding.songSingerNameTv.text.toString())
-                putExtra(KEY_PLAY, !isPlaying)
-                putExtra(KEY_SECOND, songs[nowPos].second)
-                putExtra(KEY_PLAYTIME, songs[nowPos].playTime)
-                putExtra(KEY_MUSIC, songs[nowPos].music)
-            }
-            setResult(RESULT_OK, resultIntent) // 결과 전달
             finish() // SongActivity 종료
         }
 
@@ -140,6 +123,16 @@ class SongActivity : AppCompatActivity() {
         Log.d("now Song ID",songs[nowPos].id.toString())
         startTimer()
         setPlayer(songs[nowPos])
+    }
+
+    // MainActivity로 데이터 전달
+    private fun toMainActivity(){
+        songs[nowPos].second=((binding.songProgressSb.progress * songs[nowPos].playTime)/100)/1000
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putInt("songId", songs[nowPos].id)
+        editor.apply()
     }
 
     // 좋아요 이미지 업데이트

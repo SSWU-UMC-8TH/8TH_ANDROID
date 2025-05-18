@@ -22,74 +22,85 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/miniPlayer"
+        android:id="@+id/mini_player"
         android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:background="#39D3D3D3"
-
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        android:layout_height="wrap_content"
+        android:background="#F9F9F9"
+        android:paddingVertical="5dp"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageView
-            android:id="@+id/play_stop"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView6"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_play" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="20dp"
+            <TextView
+                android:id="@+id/main_miniplayer_title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="라일락"
+                android:textColor="@color/black"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/main_miniplayer_singer_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="아이유 (IU)"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_playlist" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/imageView6"
-            android:layout_width="0dp"
-            android:layout_height="25dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView4"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_next_music" />
+            <ImageView
+                android:id="@+id/main_pre_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/btn_miniplayer_previous" />
 
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="0dp"
-            android:layout_height="25dp"
-            android:layout_marginEnd="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/play_stop"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_pre_music" />
+            <ImageView
+                android:id="@+id/main_miniplayer_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/btn_miniplayer_play" />
 
-        <TextView
-            android:id="@+id/bottomnav_title_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="24dp"
-            android:text="제목"
-            android:textColor="#131212"
-            android:textSize="18dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/bottomnav_singer_tv"
-            app:layout_constraintStart_toStartOf="parent" />
+            <ImageView
+                android:id="@+id/main_pause_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/btn_miniplay_pause"
+                android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/bottomnav_singer_tv"
-            android:layout_width="0dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="24dp"
-            android:text="가수"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+
+            <ImageView
+                android:id="@+id/main_next_btn"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/btn_miniplayer_next" />
+
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginHorizontal="15dp"
+                android:src="@drawable/btn_miniplayer_go_list" />
+
+
+        </LinearLayout>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -97,7 +108,7 @@
         android:id="@+id/mainFrame"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/miniPlayer"
+        app:layout_constraintBottom_toTopOf="@id/mini_player"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -114,7 +125,7 @@
         android:layout_marginEnd="5dp"
         android:text="01:00"
         android:textColor="#000000"
-        app:layout_constraintBottom_toTopOf="@+id/miniPlayer"
+        app:layout_constraintBottom_toTopOf="@id/mini_player"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
@@ -124,7 +135,7 @@
         android:layout_marginStart="5dp"
         android:text="00:00"
         android:textColor="#000000"
-        app:layout_constraintBottom_toTopOf="@+id/miniPlayer"
+        app:layout_constraintBottom_toTopOf="@id/mini_player"
         app:layout_constraintStart_toStartOf="parent" />
 
     <SeekBar

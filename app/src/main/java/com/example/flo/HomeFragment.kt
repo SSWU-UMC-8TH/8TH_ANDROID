@@ -70,12 +70,16 @@ class HomeFragment : Fragment() {
     // 앨범 데이터 초기화
     private fun initAlbumData() {
         albumDatas.apply {
-            add(Album("Butter", "BTS", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유(IU)", R.drawable.img_album_exp2))
-            add(Album("Next Level", "에스파(AESPA)", R.drawable.img_album_exp3))
-            add(Album("Boy with Luv", "BTS", R.drawable.img_album_exp4))
-            add(Album("BBoom BBoom", "모모랜드", R.drawable.img_album_exp5))
-            add(Album("Weekend", "태연", R.drawable.img_album_exp6))
+            add(Album(1, "Butter", "BTS", R.drawable.img_album_exp))
+            add(Album(2, "Lilac", "아이유(IU)", R.drawable.img_album_exp2))
+            add(Album(3, "Next Level", "에스파(AESPA)", R.drawable.img_album_exp3))
+            add(Album(4, "Boy with Luv", "BTS", R.drawable.img_album_exp4))
+            add(Album(5, "BBoom BBoom", "모모랜드", R.drawable.img_album_exp5))
+            add(Album(6, "Weekend", "태연", R.drawable.img_album_exp6))
+            add(Album(7, "Modal Soul", "Nujabes", R.drawable.img_modal_soul))
+            add(Album(8, "Lifes Like", "Jazzyfact", R.drawable.img_lifes_like))
+            add(Album(9, "WW3", "YE", R.drawable.img_ww3))
+            add(Album(10, "I am Music", "Playboy Carti", R.drawable.img_i_am_music))
         }
     }
 
@@ -85,16 +89,16 @@ class HomeFragment : Fragment() {
             add(
                 RecommendPanel(
                     R.drawable.img_panel_jazz_hiphop,
-                    Album("Modal Soul", "Nujabes", R.drawable.img_modal_soul),
-                    Album("Lifes Like", "Jazzyfact", R.drawable.img_lifes_like),
+                    Album(7, "Modal Soul", "Nujabes", R.drawable.img_modal_soul),
+                    Album(8, "Lifes Like", "Jazzyfact", R.drawable.img_lifes_like),
                     "jazz"
                 )
             )
             add(
                 RecommendPanel(
                     R.drawable.img_panel_lofi,
-                    Album("WW3", "YE", R.drawable.img_ww3),
-                    Album("I am Music", "Playboy Carti", R.drawable.img_i_am_music),
+                    Album(9, "WW3", "YE", R.drawable.img_ww3),
+                    Album(10, "I am Music", "Playboy Carti", R.drawable.img_i_am_music),
                     "hip hop"
                 )
             )
@@ -114,8 +118,8 @@ class HomeFragment : Fragment() {
 
             override fun onPlayAlbum(position: Int) {
                 (activity as? MainActivity)?.let{
-                    it.findViewById<TextView>(R.id.bottomnav_title_tv).text = albumDatas[position].title
-                    it.findViewById<TextView>(R.id.bottomnav_singer_tv).text = albumDatas[position].singer
+                    it.findViewById<TextView>(R.id.main_miniplayer_title_tv).text = albumDatas[position].title
+                    it.findViewById<TextView>(R.id.main_miniplayer_singer_tv).text = albumDatas[position].singer
 
                     if(mediaPlayer==null){
                         val music = resources.getIdentifier("music_hypeboy", "raw", it.packageName)

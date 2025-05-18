@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.flo.databinding.ActivityMainBinding
-import com.google.gson.Gson
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,8 +30,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var resultLauncher: ActivityResultLauncher<Intent>
-    private var song = Song("제목", "가수", 0, 60, false, "music_hypeboy")
-    private var gson = Gson()
+    private val songs=arrayListOf<Song>()
+    private var nowPos = 0
+    private lateinit var songDB: SongDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,32 +40,105 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        inputDummySong()
-        initFragment()
-        initBottomNavigation()
-        initMiniPlayer()
-        initPlayStopButton()
-        initActivityResultLauncher()
+
+        inputDummySong()                // 음악 데이터베이스 초기화
+        initFragment()                  // 프라그먼트 초기화
+        initBottomNavigation()          // 네비게이션 바 초기화
+        initClickListener()             // 클릭 이벤트 할당
     }
 
     override fun onStart() {
         super.onStart()
+
 //        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
 //        val songJson = sharedPreferences.getString("songData", null)
 //        song = songJson?.let { gson.fromJson(it, Song::class.java) } ?: Song("Hypeboy", "뉴진스", 0, 180, false, "music_hypeboy")
-        val spf = getSharedPreferences("song", MODE_PRIVATE)
-        val songId = spf.getInt("songId", 0)
 
-        val songDB = SongDatabase.getInstance(this)!!
-        song = if(songId == 0) {
-            songDB.songDao().getSong(1)
-        }else {
-            songDB.songDao().getSong(songId)
+        initSong() // SongActivity에서 전달된 데이터를 직접 가져오기
+
+        setPlayer(songs[nowPos])
+    }
+
+    override fun onPause() {
+        super.onPause()
+        toSongActivity() // SongActivity로 데이터 전달
+    }
+
+    // 현재 재생 음악의 순서값
+    private fun getPlayingSongPosition(songId: Int):Int {
+        for(i in 0 until songs.size){
+            if(songs[i].id==songId){
+                return i
+            }
         }
 
-        Log.d("song id", song.id.toString())
+        return 0
+    }
 
-        updateMiniPlayer()
+    // SongActivity에서 전달된 데이터를 직접 가져오기
+    private fun initSong(){
+        val spf = getSharedPreferences("song", MODE_PRIVATE)
+        val songId = spf.getInt("songId",0)
+
+        nowPos = getPlayingSongPosition(songId)
+    }
+
+    // SongActivity로 데이터 전달
+    private fun toSongActivity(){
+        songs[nowPos].second=((binding.mainProgressSb.progress * songs[nowPos].playTime)/100)/1000
+        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        editor.putInt("songId", songs[nowPos].id)
+        editor.apply()
+    }
+
+    // 이전 혹은 다음 음악 재생
+    private fun moveSong(direct: Int){
+        if(nowPos+direct<0){
+            Toast.makeText(this, "first song", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (nowPos+direct>=songs.size){
+            Toast.makeText(this, "last song", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        nowPos+=direct
+
+        setPlayer(songs[nowPos])
+    }
+
+    // 클릭 이벤트 할당 함수
+    private fun initClickListener(){
+        binding.mainPreBtn.setOnClickListener {
+            moveSong(-1)
+        }
+
+        binding.mainNextBtn.setOnClickListener {
+            moveSong(1)
+        }
+
+        binding.mainMiniplayerBtn.setOnClickListener {
+            songs[nowPos].isPlaying = !songs[nowPos].isPlaying
+            setPlayerStatus()
+        }
+
+        binding.miniPlayer.setOnClickListener {
+            val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
+            editor.putInt("songId", songs[nowPos].id)
+            editor.apply()
+
+            val intent = Intent(this, SongActivity::class.java)
+            startActivity(intent)
+        }
+
+    }
+
+    // 재생할 음악 리스트 초기화
+    private fun setPlayList(){
+        songDB = SongDatabase.getInstance(this)!!
+        songs.addAll(songDB.songDao().getSongs())
     }
 
     private fun initFragment() {
@@ -85,54 +158,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initMiniPlayer() {
-        binding.miniPlayer.setOnClickListener {
-            val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
-            editor.putInt("songId", song.id)
-            editor.apply()
-
-            val intent = Intent(this, SongActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
-    private fun initPlayStopButton() {
-        binding.playStop.setOnClickListener {
-            song.isPlaying = !song.isPlaying
-            updatePlayStopIcon()
-        }
     }
 
     private fun initActivityResultLauncher() {
         resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 result.data?.let { data ->
-                    song = Song(
-                        title = data.getStringExtra(KEY_TITLE) ?: song.title,
-                        singer = data.getStringExtra(KEY_SINGER) ?: song.singer,
-                        isPlaying = data.getBooleanExtra(KEY_PLAY, song.isPlaying),
-                        second = data.getIntExtra(KEY_SECOND, song.second),
-                        playTime = data.getIntExtra(KEY_PLAYTIME, song.playTime),
-                        music = data.getStringExtra(KEY_MUSIC) ?: song.music
+                    songs[nowPos] = Song(
+                        title = data.getStringExtra(KEY_TITLE) ?: songs[nowPos].title,
+                        singer = data.getStringExtra(KEY_SINGER) ?: songs[nowPos].singer,
+                        isPlaying = data.getBooleanExtra(KEY_PLAY, songs[nowPos].isPlaying),
+                        second = data.getIntExtra(KEY_SECOND, songs[nowPos].second),
+                        playTime = data.getIntExtra(KEY_PLAYTIME, songs[nowPos].playTime),
+                        music = data.getStringExtra(KEY_MUSIC) ?: songs[nowPos].music
                     )
-                    updateMiniPlayer()
-                    updatePlayStopIcon()
-                    showToast("SongActivity에서 받은 제목: ${song.title}, 가수: ${song.singer}")
+                    setPlayerStatus()
+                    showToast("SongActivity에서 받은 제목: ${songs[nowPos].title}, 가수: ${songs[nowPos].singer}")
                 }
             }
         }
     }
 
-    private fun updateMiniPlayer() {
-        binding.bottomnavTitleTv.text = song.title
-        binding.bottomnavSingerTv.text = song.singer
+    private fun setPlayer(song: Song) {
+        binding.mainMiniplayerTitleTv.text = song.title
+        binding.mainMiniplayerSingerTv.text = song.singer
         binding.mainStartTimeTv.text = formatTime(song.second)
         binding.mainEndTimeTv.text = formatTime(song.playTime)
         binding.mainProgressSb.progress = (song.second * 100000) / song.playTime
     }
 
-    private fun updatePlayStopIcon() {
-        val icon = if (song.isPlaying) R.drawable.ic_stop else R.drawable.ic_play
-        binding.playStop.setImageResource(icon)
+    private fun setPlayerStatus() {
+        val icon = if (songs[nowPos].isPlaying) R.drawable.ic_stop else R.drawable.ic_play
+        binding.mainMiniplayerBtn.setImageResource(icon)
     }
 
     private fun formatTime(seconds: Int): String = String.format("%02d:%02d", seconds / 60, seconds % 60)
@@ -158,21 +215,44 @@ class MainActivity : AppCompatActivity() {
         transaction.commit()
     }
 
+    // 음악 데이터베이스 초기화
     private fun inputDummySong(){
-        val songDB = SongDatabase.getInstance(this)!!
 
-        val songs = songDB.songDao().getSongs()
+        setPlayList()
 
         if(songs.isNotEmpty()) return
 
-        songDB.songDao().insert(Song("Weekend", "태연", 0, 20, false, "music_weekend", R.drawable.img_album_exp6))
-        songDB.songDao().insert(Song("Lilac", "아이유(IU)", 0, 20, false, "music_lilac", R.drawable.img_album_exp2))
-        songDB.songDao().insert(Song("Next Level", "에스파(AESPA)", 0, 20, false, "music_next", R.drawable.img_album_exp3))
-        songDB.songDao().insert(Song("Boy with Luv", "방탄소년단", 0, 20, false, "music_boy", R.drawable.img_album_exp4))
-        songDB.songDao().insert(Song("BBoom BBoom", "모모랜드", 0, 20, false, "music_bboom", R.drawable.img_album_exp5))
-        songDB.songDao().insert(Song("Butter", "방탄소년단", 0, 20, false, "music_butter", R.drawable.img_album_exp))
+        songDB.songDao().insert(Song("Weekend", "태연", 0, 20, false, "music_weekend", R.drawable.img_album_exp6,6))
+        songDB.songDao().insert(Song("Lilac", "아이유(IU)", 0, 20, false, "music_lilac", R.drawable.img_album_exp2, 2))
+        songDB.songDao().insert(Song("Next Level", "에스파(AESPA)", 0, 20, false, "music_next", R.drawable.img_album_exp3, 3))
+        songDB.songDao().insert(Song("Boy with Luv", "방탄소년단", 0, 20, false, "music_boy", R.drawable.img_album_exp4, 4))
+        songDB.songDao().insert(Song("BBoom BBoom", "모모랜드", 0, 20, false, "music_bboom", R.drawable.img_album_exp5, 5))
+        songDB.songDao().insert(Song("Butter", "방탄소년단", 0, 20, false, "music_butter", R.drawable.img_album_exp, 1))
 
         val _songs = songDB.songDao().getSongs()
-        Log.d("DB data", _songs.toString())
+        Log.d("songDB data", _songs.toString())
+    }
+
+    // 앨범 데이터베이스 초기화
+    private fun inputDummyAlbum(){
+        val albumDB = AlbumDatabase.getInstance(this)!!
+
+        val albums = songDB.songDao().getSongs()
+
+        if(albums.isNotEmpty()) return
+
+        albumDB.albumDao().insert(Album(1, "Butter", "BTS", R.drawable.img_album_exp))
+        albumDB.albumDao().insert(Album(2, "Lilac", "아이유(IU)", R.drawable.img_album_exp2))
+        albumDB.albumDao().insert(Album(3, "Next Level", "에스파(AESPA)", R.drawable.img_album_exp3))
+        albumDB.albumDao().insert(Album(4, "Boy with Luv", "BTS", R.drawable.img_album_exp4))
+        albumDB.albumDao().insert(Album(5, "BBoom BBoom", "모모랜드", R.drawable.img_album_exp5))
+        albumDB.albumDao().insert(Album(6, "Weekend", "태연", R.drawable.img_album_exp6))
+        albumDB.albumDao().insert(Album(7, "Modal Soul", "Nujabes", R.drawable.img_modal_soul))
+        albumDB.albumDao().insert(Album(8, "Lifes Like", "Jazzyfact", R.drawable.img_lifes_like))
+        albumDB.albumDao().insert(Album(9, "WW3", "YE", R.drawable.img_ww3))
+        albumDB.albumDao().insert(Album(10, "I am Music", "Playboy Carti", R.drawable.img_i_am_music))
+
+        val _albums = albumDB.albumDao().getAlbums()
+        Log.d("albumDB data", _albums.toString())
     }
 }
