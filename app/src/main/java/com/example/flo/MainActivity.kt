@@ -2,7 +2,7 @@ package com.example.flo
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -40,11 +40,32 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        inputDummySong()
         initFragment()
         initBottomNavigation()
         initMiniPlayer()
         initPlayStopButton()
         initActivityResultLauncher()
+    }
+
+    override fun onStart() {
+        super.onStart()
+//        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
+//        val songJson = sharedPreferences.getString("songData", null)
+//        song = songJson?.let { gson.fromJson(it, Song::class.java) } ?: Song("Hypeboy", "뉴진스", 0, 180, false, "music_hypeboy")
+        val spf = getSharedPreferences("song", MODE_PRIVATE)
+        val songId = spf.getInt("songId", 0)
+
+        val songDB = SongDatabase.getInstance(this)!!
+        song = if(songId == 0) {
+            songDB.songDao().getSong(1)
+        }else {
+            songDB.songDao().getSong(songId)
+        }
+
+        Log.d("song id", song.id.toString())
+
+        updateMiniPlayer()
     }
 
     private fun initFragment() {
@@ -65,15 +86,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun initMiniPlayer() {
         binding.miniPlayer.setOnClickListener {
-            val intent = Intent(this, SongActivity::class.java).apply {
-                putExtra(KEY_TITLE, song.title)
-                putExtra(KEY_SINGER, song.singer)
-                putExtra(KEY_SECOND, song.second)
-                putExtra(KEY_PLAYTIME, song.playTime)
-                putExtra(KEY_PLAY, song.isPlaying)
-                putExtra(KEY_MUSIC, song.music)
-            }
-            resultLauncher.launch(intent)
+            val editor = getSharedPreferences("song", MODE_PRIVATE).edit()
+            editor.putInt("songId", song.id)
+            editor.apply()
+
+            val intent = Intent(this, SongActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -102,14 +120,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
-        val songJson = sharedPreferences.getString("songData", null)
-        song = songJson?.let { gson.fromJson(it, Song::class.java) } ?: Song("Hypeboy", "뉴진스", 0, 180, false, "music_hypeboy")
-        updateMiniPlayer()
     }
 
     private fun updateMiniPlayer() {
@@ -146,5 +156,23 @@ class MainActivity : AppCompatActivity() {
             transaction.show(selectedFragment)
         }
         transaction.commit()
+    }
+
+    private fun inputDummySong(){
+        val songDB = SongDatabase.getInstance(this)!!
+
+        val songs = songDB.songDao().getSongs()
+
+        if(songs.isNotEmpty()) return
+
+        songDB.songDao().insert(Song("Weekend", "태연", 0, 20, false, "music_weekend", R.drawable.img_album_exp6))
+        songDB.songDao().insert(Song("Lilac", "아이유(IU)", 0, 20, false, "music_lilac", R.drawable.img_album_exp2))
+        songDB.songDao().insert(Song("Next Level", "에스파(AESPA)", 0, 20, false, "music_next", R.drawable.img_album_exp3))
+        songDB.songDao().insert(Song("Boy with Luv", "방탄소년단", 0, 20, false, "music_boy", R.drawable.img_album_exp4))
+        songDB.songDao().insert(Song("BBoom BBoom", "모모랜드", 0, 20, false, "music_bboom", R.drawable.img_album_exp5))
+        songDB.songDao().insert(Song("Butter", "방탄소년단", 0, 20, false, "music_butter", R.drawable.img_album_exp))
+
+        val _songs = songDB.songDao().getSongs()
+        Log.d("DB data", _songs.toString())
     }
 }

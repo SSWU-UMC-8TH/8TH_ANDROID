@@ -19,12 +19,10 @@ class MypageFragment : Fragment() {
             _binding = value
         }
 
-    // 음악 데이터를 담을 리스트
-    private val songDatas = ArrayList<Album>()
+    private lateinit var songDB: SongDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initSongData()  // 음악 데이터 초기화
     }
 
     override fun onCreateView(
@@ -32,38 +30,32 @@ class MypageFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMypageBinding.inflate(inflater, container, false)
+
+        songDB = SongDatabase.getInstance(requireContext())!!
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initSongList()  // 음악 RecyclerView 초기화
-    }
-
-    // 음악 데이터 초기화
-    private fun initSongData() {
-        songDatas.apply {
-            add(Album("Butter", "BTS", R.drawable.img_album_exp))
-            add(Album("Lilac", "아이유(IU)", R.drawable.img_album_exp2))
-            add(Album("Next Level", "에스파(AESPA)", R.drawable.img_album_exp3))
-            add(Album("Boy with Luv", "BTS", R.drawable.img_album_exp4))
-            add(Album("BBoom BBoom", "모모랜드", R.drawable.img_album_exp5))
-            add(Album("Weekend", "태연", R.drawable.img_album_exp6))
-            add(Album("WW3", "Kanye West", R.drawable.img_ww3))
-            add(Album("I am Music", "Playboy Carti", R.drawable.img_i_am_music))
-            add(Album("Modal Soul", "Nujabes", R.drawable.img_modal_soul))
-            add(Album("Lifes Like", "Jazzyfact", R.drawable.img_lifes_like))
-        }
+        initRecyclerview()  // 음악 RecyclerView 초기화
     }
 
     // 음악 RecyclerView 초기화
-    private fun initSongList(){
-        val mypageRVAdapter = MypageRVAdapter(songDatas)
+    private fun initRecyclerview(){
+        val mypageRVAdapter = MypageRVAdapter()
+
+        mypageRVAdapter.setMyItemClickListener(object : MypageRVAdapter.MyItemClickListener{
+            override fun onRemoveSong(songId: Int) {
+                songDB.songDao().updateIsLikeById(false, songId)
+            }
+        })
 
         binding.mypageRV.apply {
             adapter = mypageRVAdapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) // 수직 레이아웃으로 설정
         }
 
+        mypageRVAdapter.addSongs(songDB.songDao().getLikedSongs(true) as ArrayList<Song>)
     }
 }

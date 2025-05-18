@@ -1,18 +1,29 @@
 package com.example.flo
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.flo.databinding.ItemMypageBinding
 
-class MypageRVAdapter(private val songList: ArrayList<Album>): RecyclerView.Adapter<MypageRVAdapter.ViewHolder>() {
+class MypageRVAdapter(): RecyclerView.Adapter<MypageRVAdapter.ViewHolder>() {
 
+    private val songs = ArrayList<Song>()
     private var isClicked :ArrayList<Boolean> = ArrayList<Boolean>()
+
+    interface MyItemClickListener{
+        fun onRemoveSong(songId: Int)
+    }
+    private lateinit var mItemClickListener: MyItemClickListener
+
+    fun setMyItemClickListener(itemClickListener: MyItemClickListener){
+        mItemClickListener = itemClickListener
+    }
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemMypageBinding.inflate(LayoutInflater.from(viewGroup.context), viewGroup, false)
 
-        for(i in 0 until songList.size){
+        for(i in 0 until songs.size){
             isClicked.add(false)
         }
 
@@ -20,27 +31,41 @@ class MypageRVAdapter(private val songList: ArrayList<Album>): RecyclerView.Adap
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(songList[position])
+        holder.bind(songs[position])
 
         holder.binding.itemSongSwitch.isChecked = isClicked[position]
 
         holder.binding.itemSongSwitch.setOnClickListener {isClicked[position] = !isClicked[position]}
 
         holder.binding.itemSongMoreIv.setOnClickListener {
-            songList.removeAt(position)
-            isClicked.removeAt(position)
-            notifyDataSetChanged()
+            mItemClickListener.onRemoveSong(songs[position].id)
+            removeSong(position)
         }
     }
 
-    override fun getItemCount(): Int = songList.size
+    override fun getItemCount(): Int = songs.size
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun addSongs(songs: ArrayList<Song>){
+        this.songs.clear()
+        this.songs.addAll(songs)
+
+        notifyDataSetChanged()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun removeSong(position: Int){
+        songs.removeAt(position)
+        isClicked.removeAt(position)
+        notifyDataSetChanged()
+    }
 
     inner class ViewHolder(val binding: ItemMypageBinding): RecyclerView.ViewHolder(binding.root){
 
-        fun bind(album: Album){
-            binding.itemSongTitleTv.text = album.title
-            binding.itemSongSingerTv .text = album.singer
-            binding.itemSongImgIv.setImageResource(album.coverImg!!)
+        fun bind(song: Song){
+            binding.itemSongTitleTv.text = song.title
+            binding.itemSongSingerTv .text = song.singer
+            binding.itemSongImgIv.setImageResource(song.coverImg!!)
         }
     }
 }
