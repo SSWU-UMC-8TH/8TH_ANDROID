@@ -8,7 +8,7 @@ class MypageVPAdapter(fragment: Fragment): FragmentStateAdapter(fragment) {
         return when(position){
             0 -> BlankFragment()
             1 -> LikedFragment()
-            2 -> BlankFragment()
+            2 -> FirebaseFragment()
             3 -> BlankFragment()
             else -> BlankFragment()
         }

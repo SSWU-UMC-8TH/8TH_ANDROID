@@ -42,6 +42,9 @@ class SongActivity : AppCompatActivity() {
     private var musicService: MusicService? = null
     private var isBound = false
 
+    // Firebase 관련 변수
+    val daoFire = SongDaoFire()
+
     private val connection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
             val musicBinder = binder as MusicService.MusicBinder
@@ -177,6 +180,7 @@ class SongActivity : AppCompatActivity() {
         if(!isLike){
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
             Toast.makeText(this, "좋아요", Toast.LENGTH_SHORT).show()
+            daoFire.add(songs[nowPos])?:Log.d("add","fail")
         }else{
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
             Toast.makeText(this, "좋아요 취소", Toast.LENGTH_SHORT).show()
