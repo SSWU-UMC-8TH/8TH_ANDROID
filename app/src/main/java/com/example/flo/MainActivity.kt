@@ -272,8 +272,8 @@ class MainActivity : AppCompatActivity() {
 
         val songDB = SongDatabase.getInstance(this)
 
-        songDB.songDao().deleteAll()
-        songDB.songDao().resetAutoIncrement()
+        //songDB.songDao().deleteAll()
+        //songDB.songDao().resetAutoIncrement()
 
         val songs = songDB.songDao().getSongs()
 
@@ -294,7 +294,7 @@ class MainActivity : AppCompatActivity() {
     private fun inputDummyAlbum(){
         val albumDB = AlbumDatabase.getInstance(this)
 
-        albumDB.albumDao().deleteAll()
+        //albumDB.albumDao().deleteAll()
 
         val albums = albumDB.albumDao().getAlbums()
 

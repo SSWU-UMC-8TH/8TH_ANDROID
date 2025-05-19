@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLiked"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LikedFragment">
+
+    <LinearLayout
+        android:id="@+id/btn_select_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_select_all_IV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/btn_playlist_select_off" />
+
+        <TextView
+            android:id="@+id/btn_select_all_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="전체선택" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/btn_play_all"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toEndOf="@+id/btn_select_all"
+        app:layout_constraintTop_toTopOf="@+id/btn_select_all">
+
+        <ImageView
+            android:id="@+id/btn_play_all_IV"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_browse_arrow_right" />
+
+        <TextView
+            android:id="@+id/btn_play_all_TV"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:text="전체듣기" />
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/mypageRV"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_select_all" />
+
+    <TextView
+        android:id="@+id/btn_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="편집"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

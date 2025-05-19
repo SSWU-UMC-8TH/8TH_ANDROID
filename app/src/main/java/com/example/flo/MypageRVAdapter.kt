@@ -1,6 +1,7 @@
 package com.example.flo
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +9,7 @@ import com.example.flo.databinding.ItemMypageBinding
 
 class MypageRVAdapter(): RecyclerView.Adapter<MypageRVAdapter.ViewHolder>() {
 
-    private val songs = ArrayList<Song>()
+    val songs = ArrayList<Song>()
     private var isClicked :ArrayList<Boolean> = ArrayList<Boolean>()
 
     interface MyItemClickListener{
@@ -38,7 +39,6 @@ class MypageRVAdapter(): RecyclerView.Adapter<MypageRVAdapter.ViewHolder>() {
         holder.binding.itemSongSwitch.setOnClickListener {isClicked[position] = !isClicked[position]}
 
         holder.binding.itemSongMoreIv.setOnClickListener {
-            mItemClickListener.onRemoveSong(songs[position].id)
             removeSong(position)
         }
     }
@@ -54,7 +54,9 @@ class MypageRVAdapter(): RecyclerView.Adapter<MypageRVAdapter.ViewHolder>() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private fun removeSong(position: Int){
+    fun removeSong(position: Int){
+        Log.d("delete song", songs[position].toString())
+        mItemClickListener.onRemoveSong(songs[position].id)
         songs.removeAt(position)
         isClicked.removeAt(position)
         notifyDataSetChanged()
