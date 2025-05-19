@@ -38,6 +38,12 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        /*binding.homeAlbumImgIv1.setOnClickListener {
+            (context as MainActivity).supportFragmentManager.beginTransaction()
+                .replace(R.id.main_frm , AlbumFragment())
+                .commitAllowingStateLoss()
+        }*/
+
         inputDummyAlbums()
 
         songDB = SongDatabase.getInstance(requireContext())!!

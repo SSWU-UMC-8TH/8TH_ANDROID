@@ -2,6 +2,7 @@ package com.example.flo
 
 import androidx.room.*
 
+
 @Dao
 interface UserDao {
     @Insert
