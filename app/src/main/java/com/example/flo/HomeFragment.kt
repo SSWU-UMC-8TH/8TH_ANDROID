@@ -111,7 +111,9 @@ class HomeFragment : Fragment() {
                     songs.clear()
                     songs.addAll(songDB.songDao().getSongsByAlbum(albums[position].albumIdx))
                     nowPos=0
+                    musicService?.let{it.changeSong(this, songs[nowPos])}
                     setPlayer(songs[nowPos])
+                    setPlayerStatus(true)
                 }
             }
         })

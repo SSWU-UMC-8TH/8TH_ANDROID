@@ -11,12 +11,12 @@ class MusicService : Service() {
     private lateinit var mediaPlayer: MediaPlayer
     var isPlaying = false
 
-    override fun onBind(intent: Intent?): IBinder {
-        return MusicBinder()
-    }
-
     inner class MusicBinder : Binder() {
         fun getService(): MusicService = this@MusicService
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        return MusicBinder()
     }
 
     override fun onCreate() {
@@ -48,7 +48,7 @@ class MusicService : Service() {
     }
 
     override fun onDestroy() {
-        mediaPlayer.release()
         super.onDestroy()
+        mediaPlayer.release()
     }
 }

@@ -51,6 +51,10 @@ class MainActivity : AppCompatActivity() {
             val musicBinder = binder as MusicService.MusicBinder
             musicService = musicBinder.getService()
             isBound = true
+            if(musicService?.let{
+                    it.changeSong(this@MainActivity, songs[nowPos])
+                    Log.d("now Song",songs[nowPos].toString())
+                }==null) Log.d("musicService", "null")
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
@@ -77,17 +81,19 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
 
+
+        initSong() // SongActivity에서 전달된 데이터를 직접 가져오기
+        setPlayer(songs[nowPos])
+        setPlayerStatus(false)
+
         Intent(this, MusicService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
+
         }
 
 //        val sharedPreferences = getSharedPreferences("song", MODE_PRIVATE)
 //        val songJson = sharedPreferences.getString("songData", null)
 //        song = songJson?.let { gson.fromJson(it, Song::class.java) } ?: Song("Hypeboy", "뉴진스", 0, 180, false, "music_hypeboy")
-
-        initSong() // SongActivity에서 전달된 데이터를 직접 가져오기
-
-        setPlayer(songs[nowPos])
     }
 
     override fun onPause() {
@@ -147,6 +153,7 @@ class MainActivity : AppCompatActivity() {
         musicService?.pauseMusic()
         musicService?.changeSong(this, songs[nowPos])
         setPlayer(songs[nowPos])
+        setPlayerStatus(isPlaying)
     }
 
     // 클릭 이벤트 할당 함수
@@ -160,8 +167,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.mainMiniplayerBtn.setOnClickListener {
-            songs[nowPos].isPlaying = !songs[nowPos].isPlaying
-            setPlayerStatus(isPlaying)
+            setPlayerStatus()
         }
 
         binding.miniPlayer.setOnClickListener {
@@ -222,10 +228,9 @@ class MainActivity : AppCompatActivity() {
         binding.mainStartTimeTv.text = formatTime(song.second)
         binding.mainEndTimeTv.text = formatTime(song.playTime)
         binding.mainProgressSb.progress = (song.second * 100000) / song.playTime
-        setPlayerStatus(isPlaying)
     }
 
-    private fun setPlayerStatus(isPlaying: Boolean = !this.isPlaying) {
+    fun setPlayerStatus(isPlaying: Boolean = !this.isPlaying) {
         val icon: Int
         if (isPlaying) {
             musicService?.playMusic()
@@ -234,7 +239,7 @@ class MainActivity : AppCompatActivity() {
             musicService?.pauseMusic()
             icon=R.drawable.ic_play
         }
-        this.isPlaying = !isPlaying
+        this.isPlaying = isPlaying
         songs[nowPos].isPlaying = isPlaying
         binding.mainMiniplayerBtn.setImageResource(icon)
     }
