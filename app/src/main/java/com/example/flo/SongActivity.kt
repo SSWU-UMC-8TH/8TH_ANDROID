@@ -180,7 +180,7 @@ class SongActivity : AppCompatActivity() {
         if(!isLike){
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_on)
             Toast.makeText(this, "좋아요", Toast.LENGTH_SHORT).show()
-            daoFire.add(songs[nowPos])?:Log.d("add","fail")
+            //daoFire.add(songs[nowPos])?:Log.d("add","fail")
         }else{
             binding.songLikeIv.setImageResource(R.drawable.ic_my_like_off)
             Toast.makeText(this, "좋아요 취소", Toast.LENGTH_SHORT).show()

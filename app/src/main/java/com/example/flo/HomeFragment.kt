@@ -30,8 +30,10 @@ class HomeFragment : Fragment() {
             _binding = value
         }
 
+    private lateinit var songDB: SongDatabase
+
     // 앨범과 패널 데이터를 담을 리스트
-    private lateinit var albumDB: AlbumDatabase
+    private lateinit var albumDB: SongDatabase
     private val albums = ArrayList<Album>()
     private var nowAlbum: Int = 0
     private val panelList = ArrayList<RecommendPanel>()
@@ -49,6 +51,9 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false) // Fragment 레이아웃 초기화
+
+        songDB = SongDatabase.getInstance(requireContext())
+
         return binding.root
     }
 
@@ -67,7 +72,7 @@ class HomeFragment : Fragment() {
 
     // 앨범 데이터 초기화
     private fun initAlbumData() {
-        albumDB= AlbumDatabase.getInstance(this.requireContext())
+        albumDB= SongDatabase.getInstance(this.requireContext())
         albums.addAll(albumDB.albumDao().getAlbums())
         Log.d("albumDB data", albumDB.albumDao().getAlbums().toString())
     }

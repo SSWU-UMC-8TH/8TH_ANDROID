@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     private val albums=arrayListOf<Album>()
     private var nowAlbum = 0
-    private lateinit var albumDB: AlbumDatabase
+    private lateinit var albumDB: SongDatabase
     var isPlaying = true
 
     var musicService: MusicService? = null
@@ -292,7 +292,7 @@ class MainActivity : AppCompatActivity() {
 
     // 앨범 데이터베이스 초기화
     private fun inputDummyAlbum(){
-        val albumDB = AlbumDatabase.getInstance(this)
+        val albumDB = SongDatabase.getInstance(this)
 
         albumDB.albumDao().deleteAll()
 

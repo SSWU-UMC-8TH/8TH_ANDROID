@@ -3,7 +3,7 @@ package com.example.flo
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [Album::class], version = 3)
+@Database(entities = [Album::class], version = 4)
 abstract class AlbumDatabase : RoomDatabase() {
     abstract fun albumDao(): AlbumDao
 
