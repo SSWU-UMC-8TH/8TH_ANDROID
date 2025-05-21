@@ -30,13 +30,6 @@ class AlbumFragment : Fragment() {
     ): View? {
         binding = FragmentAlbumBinding.inflate(inflater, container, false)
 
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         val albumJson = arguments?.getString("home2album")
         album = Gson().fromJson(albumJson, Album::class.java)
 
@@ -50,6 +43,13 @@ class AlbumFragment : Fragment() {
         binding.albumBackIv.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
+
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDestroyView() {
@@ -62,6 +62,7 @@ class AlbumFragment : Fragment() {
         binding.albumAlbumIv.setImageResource(album.coverImg!!)
         binding.albumMusicTitleTv.text = album.title
         binding.albumSingerNameTv.text = album.singer
+
         if(isLiked){
             binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
         } else {
@@ -77,6 +78,8 @@ class AlbumFragment : Fragment() {
     private fun likeAlbum(userId:Int, albumId:Int){
         val songDB = SongDatabase.getInstance(requireContext())
         val like = Like(userId, albumId)
+
+        isLiked = true
 
         songDB.albumDao().likeAlbum(like)
     }
@@ -94,6 +97,8 @@ class AlbumFragment : Fragment() {
         val songDB = SongDatabase.getInstance(requireContext())
         val userId = getJwt()
 
+        isLiked = false
+
         songDB.albumDao().disLikedAlbum(userId, albumId)
     }
 
@@ -101,10 +106,10 @@ class AlbumFragment : Fragment() {
         val userId=getJwt()
         binding.albumLikeIv.setOnClickListener {
             if (isLiked){
-                binding.albumAlbumIv.setImageResource(R.drawable.ic_my_like_off)
+                binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
                 disLikedAlbum(album.albumIdx)
             } else {
-                binding.albumAlbumIv.setImageResource(R.drawable.ic_my_like_on)
+                binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_on)
                 likeAlbum(userId, album.albumIdx)
             }
         }

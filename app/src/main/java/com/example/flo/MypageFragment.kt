@@ -24,7 +24,7 @@ class MypageFragment : Fragment() {
 
     private lateinit var songDB: SongDatabase
 
-    private val information = arrayListOf("내 리스트", "좋아요", "저장한 곡", "많이 들은", "팔로잉")
+    private val information = arrayListOf("내 리스트", "좋아요", "저장앨범", "많이 들은", "팔로잉")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
