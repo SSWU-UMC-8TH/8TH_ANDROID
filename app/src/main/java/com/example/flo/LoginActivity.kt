@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivityLoginBinding
 
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), LoginView {
     lateinit var binding: ActivityLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +22,7 @@ class LoginActivity : AppCompatActivity() {
 
         binding.loginSignInBtn.setOnClickListener {
             login()
+            startMainActivity()
         }
     }
 
@@ -36,23 +37,17 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        val authService = AuthService()
+        authService.setLoginView(this)
+
+        authService.login(getUser())
+    }
+
+    private fun getUser(): User {
         val email = binding.loginIdEt.text.toString() + "@" + binding.loginDirectInputEt.text.toString()
         val password = binding.loginPasswordEt.text.toString()
 
-        val songDB = SongDatabase.getInstance(this)!!
-
-        //잘못된 유저 먼저 보여줌
-        val user = songDB.userDao().getUser(email, password)
-
-
-        user?.let {
-            Log.d("LOGIN_ACT/GET_USER", "userId: ${user.id}, $user")
-            saveJwt(user.id)
-
-            startMainActivity()
-        }
-
-        Toast.makeText(this, "회원 정보가 존재하지 않습니다.", Toast.LENGTH_SHORT).show()
+        return User(name = "", email = email, password = password)
     }
 
     private fun startMainActivity() {
@@ -60,11 +55,38 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun saveJwt(jwt: Int) {
+    /*private fun saveJwt(jwt: Int) {
         val spf = getSharedPreferences("auth" , MODE_PRIVATE)
         val editor = spf.edit()
 
         editor.putInt("jwt", jwt)
+        editor.apply()
+    }
+
+    private fun saveJwt2(jwt: String) {
+        val spf = getSharedPreferences("auth2" , MODE_PRIVATE)
+        val editor = spf.edit()
+
+        editor.putString("jwt", jwt)
+        editor.apply()
+    }
+*/
+    override fun onLoginSuccess(code : String , result: Result) {
+        if (code == "COMMON200") {
+            // 사용자 ID를 SharedPreferences에 저장할 수 있음 (선택 사항)
+            saveMemberId(result.memberId)
+            startMainActivity()
+        }
+    }
+
+    override fun onLoginFailure() {
+        Log.e("LOGIN", "로그인 실패 - 서버 응답 실패 혹은 네트워크 오류")
+    }
+
+    private fun saveMemberId(memberId: Int) {
+        val spf = getSharedPreferences("auth", MODE_PRIVATE)
+        val editor = spf.edit()
+        editor.putInt("memberId", memberId)
         editor.apply()
     }
 }

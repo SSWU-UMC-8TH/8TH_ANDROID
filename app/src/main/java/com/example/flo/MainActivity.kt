@@ -76,6 +76,9 @@ class MainActivity : AppCompatActivity() {
                 togglePlayPauseButtons(false)
             }
         }
+
+        val userId = getMemberId()
+        Log.d("MAIN/USER_ID", userId.toString())
     }
 
     override fun onStart() {
@@ -95,6 +98,11 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer = null
         updateSeekBarThread?.interrupt()
         isPlaying = false
+    }
+
+    private fun getMemberId(): Int {
+        val spf = getSharedPreferences("auth", MODE_PRIVATE)
+        return spf.getInt("memberId", -1) // -1이면 로그인 안된 상태로 처리 가능
     }
 
     private fun getPlayingSongPosition(songId: Int): Int {

@@ -2,11 +2,16 @@ package com.example.flo
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flo.databinding.ActivitySignupBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
-class SignUpActivity : AppCompatActivity() {
+class SignUpActivity : AppCompatActivity() , SignUpView{
 
     lateinit var binding: ActivitySignupBinding
 
@@ -17,15 +22,15 @@ class SignUpActivity : AppCompatActivity() {
 
         binding.signUpSignUpBtn.setOnClickListener {
             signUp()
-            finish()
         }
     }
 
     private fun getUser(): User {
+        val name: String = binding.signUpNameEt.text.toString()
         val email: String = binding.signUpIdEt.text.toString() + "@" + binding.signUpDirectInputEt.text.toString()
-        val pwd: String = binding.signUpPasswordEt.text.toString()
+        val password : String = binding.signUpPasswordEt.text.toString()
 
-        return User(email, pwd)
+        return User(name, email, password)
     }
 
     private fun signUp() {
@@ -34,16 +39,29 @@ class SignUpActivity : AppCompatActivity() {
             return
         }
 
+        if (binding.signUpNameEt.text.toString().isEmpty()) {
+            Toast.makeText(this, "이름 형식이 잘못되었습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (binding.signUpPasswordEt.text.toString() != binding.signUpPasswordCheckEt.text.toString()) {
             Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val userDB = SongDatabase.getInstance(this)!!
-        userDB.userDao().insert(getUser())
+        val authService = AuthService()
+        authService.setSignUpView(this)
 
-        val users = userDB.userDao().getUsers()
+        authService.signUp(getUser())
 
-        Log.d("SIGNUPACT", users.toString())
+        Log.d("SIGNUP-ACT/ASYNC", "Hello")
+    }
+
+    override fun onSignUpSuccess() {
+        finish()
+    }
+
+    override fun onSignUpFailure() {
+        Log.e("SIGNUP-ACTIVITY", "회원가입 실패 - 서버 응답이 실패 코드이거나 통신 실패")
     }
 }
