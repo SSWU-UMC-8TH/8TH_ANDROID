@@ -96,6 +96,8 @@ class SignUpActivity : AppCompatActivity(), SignUpView {
         val userDB = SongDatabase.getInstance(this)
         userDB.userDao().insert(user)
 
+        Toast.makeText(this, response.body()?.message, Toast.LENGTH_SHORT).show()
+
         Log.d("SIGNUPACT", user.toString())
         finish()
     }
