@@ -26,9 +26,11 @@
         android:ems="19"
         android:hint="비밀번호"
         android:inputType="textPassword"
+        app:passwordToggleEnabled="true"
         app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/editTextId"
-        app:layout_constraintTop_toBottomOf="@+id/editTextId" />
+        app:layout_constraintTop_toBottomOf="@+id/signup_name_et" />
 
     <EditText
         android:id="@+id/editTextCheck"
@@ -36,8 +38,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:ems="19"
-        android:hint="비밀번호"
+        android:hint="비밀번호 확인"
         android:inputType="textPassword"
+        app:passwordToggleEnabled="true"
         app:layout_constraintEnd_toEndOf="@+id/editTextEmail"
         app:layout_constraintStart_toStartOf="@+id/editTextId"
         app:layout_constraintTop_toBottomOf="@+id/editTextPassword" />
@@ -91,5 +94,17 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/signup_name_et"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:ems="9"
+        android:hint="이름"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="@+id/editTextId"
+        app:layout_constraintStart_toStartOf="@+id/editTextId"
+        app:layout_constraintTop_toBottomOf="@+id/editTextId" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

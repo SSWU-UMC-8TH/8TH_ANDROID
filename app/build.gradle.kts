@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.annotationProcessor
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -74,7 +76,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
 
-    val fragment_version = "1.8.6"
+    val fragment_version = "1.8.7"
 
     // Java language implementation
     implementation("androidx.fragment:fragment:$fragment_version")
@@ -87,6 +89,14 @@ dependencies {
     implementation ("androidx.room:room-runtime:2.7.1")
     kapt ("androidx.room:room-compiler:2.7.1") // 이게 핵심!
 
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.14.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0") // JSON 변환용
+
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
+
+    implementation("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
 }
