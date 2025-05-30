@@ -75,6 +75,8 @@ class MainActivity : AppCompatActivity() {
         initFragment()                  // 프라그먼트 초기화
         initBottomNavigation()          // 네비게이션 바 초기화
         initClickListener()             // 클릭 이벤트 할당
+
+        Log.d("MAIN/JWT_TO_SERVER", getJwt().toString())
     }
 
     override fun onStart() {
@@ -84,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         initSong() // SongActivity에서 전달된 데이터를 직접 가져오기
         setPlayer(songs[nowPos])
-        setPlayerStatus(false)
+//        setPlayerStatus(false)
 
         Intent(this, MusicService::class.java).also { intent ->
             bindService(intent, connection, Context.BIND_AUTO_CREATE)
@@ -107,6 +109,11 @@ class MainActivity : AppCompatActivity() {
             unbindService(connection)
             isBound = false
         }
+    }
+
+    private fun getJwt(): String?{
+        val spf = getSharedPreferences("auth2", MODE_PRIVATE)
+        return spf.getString("jwt","")
     }
 
     // 현재 재생 음악의 순서값

@@ -11,3 +11,8 @@ data class User(
 ){
     @PrimaryKey(autoGenerate = true) var id:Int=0
 }
+
+data class loginUser(
+    @SerializedName(value = "email") var email: String,
+    @SerializedName(value = "password") var password: String
+)
