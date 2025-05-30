@@ -10,7 +10,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SignUpActivity : AppCompatActivity() {
+class SignUpActivity : AppCompatActivity(), SignUpView {
     lateinit var binding: ActivitySignUpBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,34 +77,30 @@ class SignUpActivity : AppCompatActivity() {
             return
         }
 
-        val authService = getRetrofit().create(AuthRetrofitInterface::class.java)
-        authService.signUp(user).enqueue(object: Callback<AuthResponse>{
-            override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>){
-                val resp=response.body()!!
-                resp?:Toast.makeText(this@SignUpActivity,"회원가입에 실패하였습니다.",Toast.LENGTH_SHORT).show()
 
-                when(resp.code){
-                    "COMMON200"-> {
-                        Log.d("SIGNUP/SUCCESS",response.toString())
+        val authService = AuthService()
+        authService.setSignUpView(this)
 
-                        userDB.userDao().insert(user)
-
-                        Log.d("SIGNUPACT", user.toString())
-                        finish()
-                    }
-
-                    else-> Toast.makeText(this@SignUpActivity, resp.message, Toast.LENGTH_SHORT).show()
-                }
-            }
-            override fun onFailure(call: Call<AuthResponse>, t: Throwable){
-                Log.d("SIGNUP/FAILURE",t.message.toString())
-            }
-        })
+        authService.signUp(user)
     }
 
     private fun initClickListener(){
         binding.btnSignUp.setOnClickListener {
             signUp()
         }
+    }
+
+    override fun onSignUpSuccess(user: User, response: Response<AuthResponse>) {
+        Log.d("SIGNUP/SUCCESS",response.toString())
+
+        val userDB = SongDatabase.getInstance(this)
+        userDB.userDao().insert(user)
+
+        Log.d("SIGNUPACT", user.toString())
+        finish()
+    }
+
+    override fun onSignUpFailure(response: Response<AuthResponse>) {
+        Toast.makeText(this, response.body()?.message, Toast.LENGTH_SHORT).show()
     }
 }
