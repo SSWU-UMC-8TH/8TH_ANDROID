@@ -1,0 +1,18 @@
+package com.example.flo.data.entities
+
+import androidx.room.*
+import com.google.gson.annotations.SerializedName
+
+@Entity(tableName = "UserTable")
+data class User(
+    @SerializedName(value = "email") var email: String,
+    @SerializedName(value = "password") var password: String,
+    @SerializedName(value = "name") var name: String
+){
+    @PrimaryKey(autoGenerate = true) var id:Int=0
+}
+
+data class loginUser(
+    @SerializedName(value = "email") var email: String,
+    @SerializedName(value = "password") var password: String
+)
