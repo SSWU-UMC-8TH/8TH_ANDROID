@@ -73,4 +73,14 @@
         android:text="테스트"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/userImageIv"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/testTv"
+        app:layout_constraintEnd_toEndOf="@+id/mypageVP"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/album2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

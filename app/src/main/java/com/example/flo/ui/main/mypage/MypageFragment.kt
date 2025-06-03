@@ -2,12 +2,14 @@ package com.example.flo.ui.main.mypage
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import com.example.flo.data.remote.AuthResponse
 import com.example.flo.data.remote.AuthService
 import com.example.flo.data.remote.TestResponse
@@ -16,7 +18,12 @@ import com.example.flo.ui.main.MainActivity
 import com.example.flo.utils.db.SongDatabase
 import com.example.flo.databinding.FragmentMypageBinding
 import com.example.flo.utils.api.TestView
+import com.example.flo.utils.userKakao
 import com.google.android.material.tabs.TabLayoutMediator
+import com.kakao.sdk.user.UserApiClient
+import com.bumptech.glide.Glide
+import android.widget.ImageView
+import com.example.flo.R
 
 
 class MypageFragment : Fragment(), TestView {
@@ -50,6 +57,7 @@ class MypageFragment : Fragment(), TestView {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initUserImage()
         initViewPager()  // 음악 RecyclerView 초기화
         //initClickListeners()
     }
@@ -59,6 +67,20 @@ class MypageFragment : Fragment(), TestView {
         initView()
         binding.testTv.setOnClickListener {
             test()
+        }
+    }
+
+    private fun initUserImage(){
+        userKakao?.let{
+            val imageView: ImageView = binding.userImageIv
+            val imageUrl = it.kakaoAccount?.profile?.thumbnailImageUrl?.toUri()
+
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.album2) // 로딩 중 보여줄 이미지
+                .error(R.drawable.album2)       // 실패 시 보여줄 이미지
+                .into(imageView)
+            Log.d("test", it.kakaoAccount?.profile?.thumbnailImageUrl.toString())
         }
     }
 
@@ -100,11 +122,21 @@ class MypageFragment : Fragment(), TestView {
     }
 
     private fun logout(){
+        userKakao?.let{// 로그아웃
+            UserApiClient.instance.logout { error ->
+                if (error != null) {
+                    Log.e("LOGOUT/FAIL", "로그아웃 실패. SDK에서 토큰 폐기됨", error)
+                }
+                else {
+                    Log.i("LOGOUT/SUCCESS", "로그아웃 성공. SDK에서 토큰 폐기됨")
+                }
+            }
+            userKakao=null
+        }
         val spf = activity?.getSharedPreferences("auth", AppCompatActivity.MODE_PRIVATE)
         val editor = spf!!.edit()
         editor.remove("jwt")
         editor.apply()
-
     }
 
     private fun test(){

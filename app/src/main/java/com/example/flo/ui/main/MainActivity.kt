@@ -77,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         inputDummySong()                // 음악 데이터베이스 초기화
         setPlayList()
         inputDummyAlbum()               // 앨범 데이터베이스 초기화

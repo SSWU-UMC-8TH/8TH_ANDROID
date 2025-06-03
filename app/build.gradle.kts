@@ -99,4 +99,16 @@ dependencies {
 
     implementation("com.github.bumptech.glide:glide:4.15.1")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
+
+    val LATEST_VERSION = "2.21.3"
+    implementation("com.kakao.sdk:v2-all:${LATEST_VERSION}") // 전체 모듈 설치, 2.11.0 버전부터 지원
+    implementation("com.kakao.sdk:v2-user:${LATEST_VERSION}") // 카카오 로그인 API 모듈
+    implementation("com.kakao.sdk:v2-share:${LATEST_VERSION}") // 카카오톡 공유 API 모듈
+    implementation("com.kakao.sdk:v2-talk:${LATEST_VERSION}") // 카카오톡 채널, 카카오톡 소셜, 카카오톡 메시지 API 모듈
+    implementation("com.kakao.sdk:v2-friend:${LATEST_VERSION}") // 피커 API 모듈
+    implementation("com.kakao.sdk:v2-navi:${LATEST_VERSION}") // 카카오내비 API 모듈
+    implementation("com.kakao.sdk:v2-cert:${LATEST_VERSION}") // 카카오톡 인증 서비스 API 모듈
+
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    kapt("com.github.bumptech.glide:compiler:4.16.0") // 선택 사항
 }

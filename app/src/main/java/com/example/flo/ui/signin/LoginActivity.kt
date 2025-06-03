@@ -2,6 +2,7 @@ package com.example.flo.ui.signin
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +13,8 @@ import com.example.flo.data.remote.AuthService
 import com.example.flo.data.remote.Result
 import com.example.flo.databinding.ActivityLoginBinding
 import com.example.flo.ui.main.MainActivity
+import com.example.flo.utils.userKakao
+import com.kakao.sdk.user.UserApiClient
 
 class LoginActivity : AppCompatActivity(), LoginView {
     lateinit var binding: ActivityLoginBinding
@@ -33,6 +36,10 @@ class LoginActivity : AppCompatActivity(), LoginView {
 
         binding.signInTv.setOnClickListener {
             login()
+        }
+
+        binding.btnKakaoIv.setOnClickListener {
+            kakaoLogin()
         }
     }
 
@@ -99,5 +106,49 @@ class LoginActivity : AppCompatActivity(), LoginView {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
 
+    }
+
+    private fun kakaoLogin(){
+        // 카카오톡으로 로그인
+        UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
+            if (error != null) {
+                Log.e("KAKAO/FAIL", "로그인 실패", error)
+            }
+            else if (token != null) {
+                Log.i("KAKAO/SUCCESS", "로그인 성공 ${token.accessToken}")
+                getKakaoUserInfo()
+            }
+        }
+    }
+
+    private fun getKakaoUserInfo(){
+        UserApiClient.instance.me { user, error ->
+            if (error != null) {
+                Log.e("KAKAO/ME/FAIL", "사용자 정보 요청 실패", error)
+            }
+            else if (user != null) {
+                userKakao=user
+                userKakao?.let{
+                    Log.i("KAKAO/ME/SUCCESS", "사용자 정보 요청 성공" +
+                        "\n회원번호: ${it.id}" +
+                        "\n이메일: ${it.kakaoAccount?.email}" +
+                        "\n닉네임: ${it.kakaoAccount?.profile?.nickname}" +
+                        "\n프로필사진: ${it.kakaoAccount?.profile?.thumbnailImageUrl}")}
+
+                val userdb=SongDatabase.getInstance(this)
+                saveJwt(userKakao!!.id.toString())
+                val user=com.example.flo.data.entities.User(
+                    userKakao!!.kakaoAccount?.email.toString(),
+                    "kakao",
+                    userKakao!!.kakaoAccount?.profile?.nickname.toString(),
+                    userKakao!!.kakaoAccount?.profile?.thumbnailImageUrl.toString())
+
+                if(userdb.userDao().getUser(user.email,user.password)==null){
+                    userdb.userDao().insert(user)
+                }
+
+                startMainActivity()
+            }
+        }
     }
 }

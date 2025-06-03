@@ -8,7 +8,7 @@ import com.example.flo.data.entities.Song
 import com.example.flo.data.entities.User
 import com.example.flo.utils.db.dao.AlbumDao
 
-@Database(entities = [Album::class, Song::class, User::class, Like::class], version = 5)
+@Database(entities = [Album::class, Song::class, User::class, Like::class], version = 6)
 abstract class AlbumDatabase : RoomDatabase() {
     abstract fun albumDao(): AlbumDao
 
