@@ -1,8 +1,15 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
 }
+
+val localProperties = Properties()
+localProperties.load(project.rootProject.file("local.properties").inputStream())
+val kakaoApiKey = localProperties.getProperty("kakao_native_app_key")?:""
+val nativeAppKey = localProperties.getProperty("kakao_native_app_key_manifest")?:""
 
 android {
     namespace = "com.example.flo"
@@ -16,11 +23,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "kakao_native_app_key", "\"$kakaoApiKey\"")
+        manifestPlaceholders["NATIVE_APP_KEY"] = nativeAppKey
     }
 
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 
 
@@ -70,7 +80,11 @@ dependencies {
 
     //Glide
     implementation("com.github.bumptech.glide:glide:4.11.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.11.0")
+    kapt("com.github.bumptech.glide:compiler:4.11.0")
+
+    //Kakao 로그인
+    implementation("com.kakao.sdk:v2-user:2.19.0")
+
 
 
 

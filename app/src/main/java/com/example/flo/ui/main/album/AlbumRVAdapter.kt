@@ -1,8 +1,10 @@
 package com.example.flo.ui.main.album
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.flo.R
 import com.example.flo.data.entities.Album
 import com.example.flo.databinding.ItemAlbumBinding
 
@@ -49,12 +51,17 @@ class AlbumRVAdapter(private val albumList: ArrayList<Album>): RecyclerView.Adap
     //뷰홀더
     inner class ViewHolder(val binding: ItemAlbumBinding): RecyclerView.ViewHolder(binding.root){
 
-        fun bind(album: Album){
+        fun bind(album: Album) {
+            Log.d("AlbumAdapter", "bind - title: ${album.title}, coverImg: ${album.coverImg}")
+
+
+            // 2. 텍스트 세팅
             binding.itemAlbumTitleTv.text = album.title
             binding.itemAlbumSingerTv.text = album.singer
-            binding.itemAlbumCoverImgIv.setImageResource(album.coverImg!!)
+
+            binding.itemAlbumCoverImgIv.setImageDrawable(null)
+            // 3. 이미지 세팅
+            binding.itemAlbumCoverImgIv.setImageResource(album.coverImg ?: R.drawable.img_album_exp2)
         }
     }
-
-
 }

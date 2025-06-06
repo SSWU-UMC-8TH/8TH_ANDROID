@@ -42,19 +42,20 @@ class HomeFragment : Fragment() {
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
 
+        songDB = SongDatabase.getInstance(requireContext())!!
+        Log.d("albumlist", albumDatas.toString())
+
+        // 1. 더미 데이터 삽입 (이미 있으면 건너뜀)
         inputDummyAlbums()
 
-        songDB = SongDatabase.getInstance(requireContext())!!
-        albumDatas.addAll(songDB.albumDao().getAlbums())
-        Log.d("albumlist", albumDatas.toString())
+        // 2. DB에서 데이터 가져오기
+        val albums = songDB.albumDao().getAlbums()
+        val allSongs = songDB.songDao().getSongs()
 
         val albumRVAdapter = AlbumRVAdapter(albumDatas)
         binding.homeTodayMusicAlbumRv.adapter = albumRVAdapter
         binding.homeTodayMusicAlbumRv.layoutManager = LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
-
-        val albums = songDB.albumDao().getAlbums()
-        val allSongs = songDB.songDao().getSongs()
-
+        // 3. albumDatas 초기화 및 songs 매핑
         albumDatas.clear()
         albumDatas.addAll(albums.map { album ->
             album.songs = ArrayList(allSongs.filter { it.albumIdx == album.id })

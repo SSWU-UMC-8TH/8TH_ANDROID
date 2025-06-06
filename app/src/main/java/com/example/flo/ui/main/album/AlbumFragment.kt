@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.flo.R
@@ -65,12 +66,9 @@ class AlbumFragment : Fragment() {
         }
     }
 
-    private fun getJwt(): Int {
+    private fun getJwt(): String? {
         val spf = activity?.getSharedPreferences("auth2", AppCompatActivity.MODE_PRIVATE)
-        val jwt = spf!!.getInt("jwt", 0)
-        //Log.d("MAIN_ACT/GET_JWT", "jwt_token: $jwt")
-
-        return jwt
+        return spf?.getString("jwt", null)
     }
 
     private fun likeAlbum(userId: Int, albumId: Int) {
@@ -81,11 +79,11 @@ class AlbumFragment : Fragment() {
     }
 
     private fun isLikedAlbum(albumId: Int): Boolean {
+        val userId = getUserId()
+        if (userId == -1) return false // 카카오 로그인 또는 비회원
+
         val songDB = SongDatabase.getInstance(requireContext())!!
-        val userId = getJwt()
-
         val likeId: Int? = songDB.albumDao().isLikedAlbum(userId, albumId)
-
         return likeId != null
     }
 
@@ -96,10 +94,13 @@ class AlbumFragment : Fragment() {
     }
 
     private fun setClickListeners(album: Album) {
-        val userId: Int = getJwt()
+        val userId = getUserId()
+        if (userId == -1) {
+            return
+        }
 
         binding.albumLikeIv.setOnClickListener {
-            if(isLiked) {
+            if (isLiked) {
                 binding.albumLikeIv.setImageResource(R.drawable.ic_my_like_off)
                 disLikeAlbum(userId, album.id)
             } else {
@@ -110,5 +111,11 @@ class AlbumFragment : Fragment() {
             isLiked = !isLiked
         }
     }
+
+    private fun getUserId(): Int {
+        val spf = activity?.getSharedPreferences("auth2", AppCompatActivity.MODE_PRIVATE)
+        return spf?.getInt("userId", -1) ?: -1
+    }
+
 
 }
